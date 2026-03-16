@@ -1,9 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import MarkerPopup from './MarkerPopup'
 import Logo from './Logo'
 import { initialPoints } from '../data/points'
+import { generateOrders } from '../data/orders'
 
 const defaultIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
@@ -53,6 +54,31 @@ function FitBounds({ points, enabled }) {
   return null
 }
 
+function generateArc(from, to, segments = 40) {
+  const points = []
+  const dx = to.lng - from.lng
+  const dy = to.lat - from.lat
+  const dist = Math.sqrt(dx * dx + dy * dy)
+  const bulge = Math.min(dist * 0.3, 25)
+
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments
+    const lat = from.lat + dy * t
+    const lng = from.lng + dx * t
+    const arc = Math.sin(t * Math.PI) * bulge
+    const nx = -dy / dist
+    const ny = dx / dist
+    points.push([lat + nx * arc, lng + ny * arc])
+  }
+  return points
+}
+
+const statusColors = {
+  delivered: '#2e7d32',
+  transit: '#e65100',
+  preparing: '#1565c0',
+}
+
 export default function AdminMap({ onLogout, user }) {
   const [clientContacts, setClientContacts] = useState([])
   const [search, setSearch] = useState('')
@@ -96,6 +122,27 @@ export default function AdminMap({ onLogout, user }) {
   const mappable = useMemo(
     () => filtered.filter(p => p.lat && p.lng),
     [filtered]
+  )
+
+  const arcs = useMemo(() => {
+    const result = []
+    mappable.forEach(point => {
+      const orders = generateOrders(point.id)
+      orders.forEach((order, i) => {
+        const from = { lat: order.originLat, lng: order.originLng }
+        const to = { lat: point.lat, lng: point.lng }
+        const dx = Math.abs(from.lat - to.lat) + Math.abs(from.lng - to.lng)
+        if (dx < 0.5) return // skip arcs too short (same area)
+        result.push({
+          key: `${point.id}-${i}`,
+          positions: generateArc(from, to),
+          color: statusColors[order.status.cls],
+          to,
+        })
+      })
+    })
+    return result
+  }, [mappable]
   )
 
   // Fit bounds when filters change
@@ -229,6 +276,20 @@ export default function AdminMap({ onLogout, user }) {
             />
             <FitBounds points={mappable} enabled={fitKey} />
             <MapController flyTo={flyTo} />
+            {/* Arc lines */}
+            {arcs.map((arc) => (
+              <Polyline
+                key={arc.key}
+                positions={arc.positions}
+                pathOptions={{
+                  color: arc.color,
+                  weight: 1.5,
+                  opacity: 0.4,
+                  dashArray: '6 4',
+                }}
+              />
+            ))}
+            {/* Contact markers */}
             {mappable.map((point) => {
               const isClient = point.source === 'client-form'
               const key = isClient ? `client-${point.id}` : point.id

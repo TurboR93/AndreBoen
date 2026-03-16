@@ -1,48 +1,5 @@
 import { useState } from 'react'
-
-const wines = [
-  'Cabernet Sauvignon', 'Merlot', 'Pinot Grigio', 'Prosecco',
-  'Amarone', 'Barolo', 'Chianti', 'Nebbiolo', 'Valpolicella',
-  'Soave', 'Franciacorta', 'Brunello', 'Primitivo', 'Vermentino',
-  'Ribolla Gialla', 'Refosco', 'Lugana', 'Gewürztraminer'
-]
-
-const destinations = [
-  'Germania', 'USA', 'UK', 'Giappone', 'Canada',
-  'Svizzera', 'Francia', 'Danimarca', 'Svezia', 'Australia',
-  'Brasile', 'Cina', 'Corea del Sud', 'Norvegia', 'Belgio'
-]
-
-const statuses = [
-  { label: 'Consegnato', cls: 'delivered' },
-  { label: 'In transito', cls: 'transit' },
-  { label: 'In preparazione', cls: 'preparing' },
-]
-
-function seededRandom(seed) {
-  let s = seed
-  return () => {
-    s = (s * 16807 + 7) % 2147483647
-    return (s - 1) / 2147483646
-  }
-}
-
-function generateOrders(pointId) {
-  const rand = seededRandom(pointId * 137 + 42)
-  const count = 3
-  const orders = []
-  for (let i = 0; i < count; i++) {
-    const wine = wines[Math.floor(rand() * wines.length)]
-    const qty = Math.floor(rand() * 45) + 5
-    const dest = destinations[Math.floor(rand() * destinations.length)]
-    const status = statuses[Math.floor(rand() * statuses.length)]
-    const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
-    const month = months[Math.floor(rand() * 12)]
-    const year = rand() > 0.4 ? '2026' : '2025'
-    orders.push({ wine, qty, dest, status, date: `${month} ${year}` })
-  }
-  return orders
-}
+import { generateOrders } from '../data/orders'
 
 export default function MarkerPopup({ point }) {
   const [expanded, setExpanded] = useState(false)
@@ -123,7 +80,7 @@ export default function MarkerPopup({ point }) {
                 <div className="order-card__wine">{order.wine}</div>
                 <div className="order-card__qty">{order.qty} bancali</div>
                 <div className="order-card__meta">
-                  <span>{order.dest}</span>
+                  <span>{order.origin}</span>
                   <span>{order.date}</span>
                 </div>
               </div>
