@@ -485,7 +485,8 @@ export const initialPoints = [
     lastName: "Crawford",
     phone: "+44 20 7946 0958",
     email: "j.crawford@thamesvalleywines.co.uk",
-    role: "Head of Procurement"
+    role: "Head of Procurement",
+    source: "client-form"
   },
   {
     id: 38,
@@ -511,7 +512,8 @@ export const initialPoints = [
     lastName: "Chen",
     phone: "+1 212 555 0147",
     email: "r.chen@manhattanfinewines.com",
-    role: "VP of Imports"
+    role: "VP of Imports",
+    source: "client-form"
   },
   {
     id: 40,
@@ -563,7 +565,8 @@ export const initialPoints = [
     lastName: "Tanaka",
     phone: "+81 3 5555 0812",
     email: "y.tanaka@sakurawine.jp",
-    role: "Import Manager"
+    role: "Import Manager",
+    source: "client-form"
   },
   {
     id: 44,
@@ -576,7 +579,8 @@ export const initialPoints = [
     lastName: "Zhang",
     phone: "+86 21 5555 6789",
     email: "w.zhang@shanghaiprestige.cn",
-    role: "General Manager"
+    role: "General Manager",
+    source: "client-form"
   },
   {
     id: 45,
@@ -602,7 +606,8 @@ export const initialPoints = [
     lastName: "O'Brien",
     phone: "+61 2 9555 7890",
     email: "j.obrien@southerncrosswines.com.au",
-    role: "Chief Buyer"
+    role: "Chief Buyer",
+    source: "client-form"
   },
   {
     id: 47,
@@ -628,7 +633,8 @@ export const initialPoints = [
     lastName: "Gutierrez",
     phone: "+54 11 5555 8901",
     email: "m.gutierrez@bawineexchange.ar",
-    role: "Gerente de Importaciones"
+    role: "Gerente de Importaciones",
+    source: "client-form"
   },
   {
     id: 49,
@@ -719,7 +725,8 @@ export const initialPoints = [
     lastName: "Al-Rashid",
     phone: "+971 4 555 6789",
     email: "a.alrashid@dubailuxwine.ae",
-    role: "Procurement Director"
+    role: "Procurement Director",
+    source: "client-form"
   },
   {
     id: 56,
@@ -732,7 +739,8 @@ export const initialPoints = [
     lastName: "Park",
     phone: "+82 2 555 6789",
     email: "jh.park@seoulpremiumwine.kr",
-    role: "Import Division Manager"
+    role: "Import Division Manager",
+    source: "client-form"
   },
   {
     id: 57,

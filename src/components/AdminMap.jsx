@@ -86,7 +86,11 @@ export default function AdminMap({ onLogout, user }) {
         (p.role && p.role.toLowerCase().includes(q))
       )
     }
-    return result
+    return result.sort((a, b) => {
+      const aNew = a.source === 'client-form' ? 1 : 0
+      const bNew = b.source === 'client-form' ? 1 : 0
+      return bNew - aNew
+    })
   }, [allPoints, search])
 
   const mappable = useMemo(
@@ -156,11 +160,14 @@ export default function AdminMap({ onLogout, user }) {
                   <span className="sidebar__stat">
                     <strong>{filtered.length}</strong> / {allPoints.length}
                   </span>
-                  {clientContacts.length > 0 && (
-                    <span className="sidebar__stat sidebar__stat--new">
-                      {clientContacts.length} nuovi
-                    </span>
-                  )}
+                  {(() => {
+                    const newCount = allPoints.filter(p => p.source === 'client-form').length
+                    return newCount > 0 && (
+                      <span className="sidebar__stat sidebar__stat--new">
+                        {newCount} nuovi
+                      </span>
+                    )
+                  })()}
                 </div>
               </div>
 
