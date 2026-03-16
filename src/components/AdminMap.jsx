@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import MarkerPopup from './MarkerPopup'
@@ -56,12 +56,11 @@ function FitBounds({ points, enabled }) {
 export default function AdminMap({ onLogout, user }) {
   const [clientContacts, setClientContacts] = useState([])
   const [search, setSearch] = useState('')
-  const [filterCountry, setFilterCountry] = useState('')
-  const [filterCity, setFilterCity] = useState('')
   const [selectedId, setSelectedId] = useState(null)
   const [flyTo, setFlyTo] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [fitKey, setFitKey] = useState(0)
+  const [mobileView, setMobileView] = useState('list')
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('clientContacts') || '[]')
@@ -73,22 +72,8 @@ export default function AdminMap({ onLogout, user }) {
     [clientContacts]
   )
 
-  const countries = useMemo(() => {
-    const set = new Set(allPoints.map(p => p.country).filter(Boolean))
-    return [...set].sort()
-  }, [allPoints])
-
-  const cities = useMemo(() => {
-    let pts = allPoints
-    if (filterCountry) pts = pts.filter(p => p.country === filterCountry)
-    const set = new Set(pts.map(p => p.city).filter(Boolean))
-    return [...set].sort()
-  }, [allPoints, filterCountry])
-
   const filtered = useMemo(() => {
     let result = allPoints
-    if (filterCountry) result = result.filter(p => p.country === filterCountry)
-    if (filterCity) result = result.filter(p => p.city === filterCity)
     if (search.trim()) {
       const q = search.toLowerCase()
       result = result.filter(p =>
@@ -97,11 +82,12 @@ export default function AdminMap({ onLogout, user }) {
         p.lastName.toLowerCase().includes(q) ||
         p.email.toLowerCase().includes(q) ||
         (p.city && p.city.toLowerCase().includes(q)) ||
+        (p.country && p.country.toLowerCase().includes(q)) ||
         (p.role && p.role.toLowerCase().includes(q))
       )
     }
     return result
-  }, [allPoints, filterCountry, filterCity, search])
+  }, [allPoints, search])
 
   const mappable = useMemo(
     () => filtered.filter(p => p.lat && p.lng),
@@ -113,19 +99,14 @@ export default function AdminMap({ onLogout, user }) {
     setFitKey(k => k + 1)
     setSelectedId(null)
     setFlyTo(null)
-  }, [filterCountry, filterCity, search])
+  }, [search])
 
   const handleContactClick = (point) => {
     setSelectedId(point.id)
     if (point.lat && point.lng) {
       setFlyTo({ lat: point.lat, lng: point.lng, _ts: Date.now() })
+      setMobileView('map')
     }
-  }
-
-  const resetFilters = () => {
-    setSearch('')
-    setFilterCountry('')
-    setFilterCity('')
   }
 
   return (
@@ -140,9 +121,25 @@ export default function AdminMap({ onLogout, user }) {
         </div>
       </header>
 
+      {/* Mobile tab bar */}
+      <div className="mobile-tabs">
+        <button
+          className={`mobile-tabs__btn ${mobileView === 'list' ? 'mobile-tabs__btn--active' : ''}`}
+          onClick={() => setMobileView('list')}
+        >
+          Contatti
+        </button>
+        <button
+          className={`mobile-tabs__btn ${mobileView === 'map' ? 'mobile-tabs__btn--active' : ''}`}
+          onClick={() => setMobileView('map')}
+        >
+          Mappa
+        </button>
+      </div>
+
       <div className="admin__body">
         {/* SIDEBAR */}
-        <aside className={`sidebar ${sidebarOpen ? '' : 'sidebar--collapsed'}`}>
+        <aside className={`sidebar ${sidebarOpen ? '' : 'sidebar--collapsed'} ${mobileView === 'map' ? 'sidebar--mobile-hidden' : ''}`}>
           <button
             className="sidebar__toggle"
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -171,31 +168,13 @@ export default function AdminMap({ onLogout, user }) {
                 <input
                   type="text"
                   className="sidebar__search"
-                  placeholder="Cerca nome, azienda, email..."
+                  placeholder="Cerca nome, azienda, città, paese..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <div className="sidebar__filter-row">
-                  <select
-                    className="sidebar__select"
-                    value={filterCountry}
-                    onChange={(e) => { setFilterCountry(e.target.value); setFilterCity('') }}
-                  >
-                    <option value="">Tutti i paesi</option>
-                    {countries.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <select
-                    className="sidebar__select"
-                    value={filterCity}
-                    onChange={(e) => setFilterCity(e.target.value)}
-                  >
-                    <option value="">Tutte le città</option>
-                    {cities.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                {(search || filterCountry || filterCity) && (
-                  <button className="sidebar__reset" onClick={resetFilters}>
-                    Rimuovi filtri
+                {search && (
+                  <button className="sidebar__reset" onClick={() => setSearch('')}>
+                    Rimuovi filtro
                   </button>
                 )}
               </div>
@@ -230,7 +209,7 @@ export default function AdminMap({ onLogout, user }) {
         </aside>
 
         {/* MAP */}
-        <div className="admin__map-container">
+        <div className={`admin__map-container ${mobileView === 'list' ? 'map--mobile-hidden' : ''}`}>
           <MapContainer
             center={[46.0, 13.0]}
             zoom={7}
