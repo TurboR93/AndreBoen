@@ -762,6 +762,31 @@ body {
 .marker-popup {
   font-family: 'Inter', sans-serif;
   min-width: 220px;
+  transition: min-width 0.3s ease;
+}
+
+.marker-popup--expanded {
+  min-width: 360px;
+}
+
+.marker-popup__card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.marker-popup__card--compact {
+  text-align: center;
+  padding-bottom: 0.2rem;
+}
+
+.marker-popup__card--compact .marker-popup__company {
+  font-size: 0.95rem;
+  margin-bottom: 0.15rem;
+}
+
+.marker-popup__contact-line {
+  font-size: 0.78rem;
+  color: var(--text-light);
 }
 
 .marker-popup__company {
@@ -801,6 +826,171 @@ body {
   border-radius: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.marker-popup__expand-hint {
+  font-size: 0.68rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+  text-align: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.marker-popup__card:hover .marker-popup__expand-hint {
+  opacity: 1;
+}
+
+/* ===== BRANCH TREE ===== */
+.marker-popup__branch {
+  position: relative;
+  animation: branchIn 0.4s ease forwards;
+}
+
+@keyframes branchIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.marker-popup__trunk {
+  width: 2px;
+  height: 16px;
+  background: var(--gold);
+  margin: 0 auto;
+  opacity: 0.6;
+}
+
+.marker-popup__branches {
+  position: relative;
+  height: 16px;
+  margin: 0 30px;
+}
+
+.marker-popup__branch-line {
+  position: absolute;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.marker-popup__branch-line--left {
+  top: 0;
+  left: 0;
+  right: 50%;
+  height: 2px;
+}
+
+.marker-popup__branch-line--center {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-1px);
+}
+
+.marker-popup__branch-line--right {
+  top: 0;
+  left: 50%;
+  right: 0;
+  height: 2px;
+}
+
+.marker-popup__branch-line--left::after,
+.marker-popup__branch-line--right::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 16px;
+  background: var(--gold);
+  opacity: 1;
+}
+
+.marker-popup__branch-line--left::after {
+  left: 0;
+}
+
+.marker-popup__branch-line--right::after {
+  right: 0;
+}
+
+/* ===== ORDER CARDS ===== */
+.marker-popup__orders {
+  display: flex;
+  gap: 8px;
+}
+
+.order-card {
+  flex: 1;
+  background: #faf7f2;
+  border: 1px solid #e8e0d5;
+  border-radius: 6px;
+  padding: 0.55rem 0.5rem;
+  min-width: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(114, 47, 55, 0.12);
+}
+
+.order-card__status {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  display: inline-block;
+  margin-bottom: 0.35rem;
+}
+
+.order-card__status--delivered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.order-card__status--transit {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.order-card__status--preparing {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.order-card__wine {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--wine);
+  line-height: 1.2;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-card__qty {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.order-card__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  color: var(--text-light);
+}
+
+/* Override Leaflet popup width for expanded popups */
+.leaflet-popup-content {
+  margin: 12px 14px;
 }
 
 /* ===== MOBILE TABS ===== */

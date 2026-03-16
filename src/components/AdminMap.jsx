@@ -234,7 +234,7 @@ export default function AdminMap({ onLogout, user }) {
                     click: () => setSelectedId(point.id)
                   }}
                 >
-                  <Popup>
+                  <Popup maxWidth={420} minWidth={220}>
                     <MarkerPopup point={point} />
                   </Popup>
                 </Marker>
