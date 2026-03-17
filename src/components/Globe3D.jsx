@@ -44,19 +44,27 @@ export default function Globe3D({ markers = [], onMarkerClick }) {
 
     // Globe sphere
     const RADIUS = 1;
+    const loader = new THREE.TextureLoader();
+    const earthTex = loader.load(
+      'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r150/examples/textures/land_ocean_ice_cloud_2048.jpg'
+    );
+    const bumpTex = loader.load(
+      'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r150/examples/textures/water.jpg'
+    );
     const globe = new THREE.Mesh(
       new THREE.SphereGeometry(RADIUS, 64, 64),
       new THREE.MeshPhongMaterial({
-        color: 0x1a2332,
-        emissive: 0x0a1020,
-        specular: 0xc8a96e,
-        shininess: 30,
+        map: earthTex,
+        bumpMap: bumpTex,
+        bumpScale: 0.02,
+        specular: new THREE.Color(0x333333),
+        shininess: 15,
       })
     );
     group.add(globe);
 
     // Grid lines
-    const gridMat = new THREE.LineBasicMaterial({ color: 0x2a3a52, transparent: true, opacity: 0.5 });
+    const gridMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 });
     for (let lat = -60; lat <= 60; lat += 30) {
       const pts = [];
       for (let lng = 0; lng <= 360; lng += 2) pts.push(latLngToVec3(lat, lng, RADIUS + 0.002));
