@@ -8,6 +8,7 @@
 }
 
 :root {
+  /* Legacy wine CRM palette */
   --wine: #722F37;
   --wine-dark: #5a1f26;
   --gold: #C5A572;
@@ -17,6 +18,18 @@
   --black: #1a1a1a;
   --text: #2d2d2d;
   --text-light: #666;
+
+  /* BOEN Milano palette */
+  --boen-navy: #1a2332;
+  --boen-navy-light: #243040;
+  --boen-navy-dark: #111825;
+  --boen-gold: #c8a96e;
+  --boen-gold-light: #d9be8e;
+  --boen-gold-dark: #a88a52;
+  --boen-white: #f8f6f2;
+  --boen-gray: #8a9aaa;
+  --boen-text: #1a2332;
+  --boen-header-h: 64px;
 }
 
 html, body, #root {
@@ -1100,5 +1113,1114 @@ body {
 
   .zoom-text-line {
     font-size: 1rem;
+  }
+}
+
+/* ====================================================
+   BOEN MILANO — Design System
+   ==================================================== */
+
+/* ===== APP SHELL ===== */
+.boen-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--boen-white);
+  color: var(--boen-text);
+}
+
+.boen-main {
+  flex: 1;
+  padding-top: var(--boen-header-h);
+}
+
+.boen-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  font-size: 2rem;
+  color: var(--boen-gold);
+}
+
+/* ===== HEADER ===== */
+.boen-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--boen-header-h);
+  background: rgba(26, 35, 50, 0.97);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  border-bottom: 1px solid rgba(200, 169, 110, 0.2);
+}
+
+.boen-header__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  gap: 1rem;
+}
+
+.boen-header__logo {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+}
+
+.boen-header__logo-main {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--boen-gold);
+  letter-spacing: 0.15em;
+}
+
+.boen-header__logo-sub {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: rgba(200, 169, 110, 0.7);
+  letter-spacing: 0.05em;
+}
+
+/* ===== NAV ===== */
+.boen-nav {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.boen-nav__link {
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 242, 0.75);
+  padding: 0.4rem 0.65rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.boen-nav__link:hover {
+  color: var(--boen-gold);
+  background: rgba(200, 169, 110, 0.08);
+}
+
+.boen-nav__link--active {
+  color: var(--boen-gold) !important;
+}
+
+/* ===== HEADER ACTIONS ===== */
+.boen-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.boen-lang-toggle {
+  background: none;
+  border: 1px solid rgba(200, 169, 110, 0.4);
+  color: var(--boen-gold);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.boen-lang-toggle:hover {
+  background: rgba(200, 169, 110, 0.1);
+  border-color: var(--boen-gold);
+}
+
+.boen-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.boen-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--boen-gold);
+  border-radius: 2px;
+  transition: transform 0.2s;
+}
+
+/* ===== BUTTONS ===== */
+.boen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.boen-btn--gold {
+  background: var(--boen-gold);
+  color: var(--boen-navy);
+}
+
+.boen-btn--gold:hover {
+  background: var(--boen-gold-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(200, 169, 110, 0.35);
+}
+
+.boen-btn--outline {
+  background: transparent;
+  border: 1px solid var(--boen-gold);
+  color: var(--boen-gold);
+}
+
+.boen-btn--outline:hover {
+  background: var(--boen-gold);
+  color: var(--boen-navy);
+}
+
+.boen-btn--full {
+  width: 100%;
+}
+
+/* ===== FOOTER ===== */
+.boen-footer {
+  background: var(--boen-navy-dark);
+  color: rgba(248, 246, 242, 0.4);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.boen-footer__admin-link {
+  background: none;
+  border: none;
+  color: rgba(200, 169, 110, 0.35);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.boen-footer__admin-link:hover {
+  color: var(--boen-gold);
+}
+
+/* ===== HOME HERO ===== */
+.boen-home {
+  min-height: 100vh;
+}
+
+.boen-hero {
+  position: relative;
+  height: calc(100vh - var(--boen-header-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--boen-navy-dark);
+}
+
+.boen-hero__globe {
+  position: absolute;
+  inset: 0;
+}
+
+.globe3d {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.globe3d:active {
+  cursor: grabbing;
+}
+
+.boen-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(17, 24, 37, 0.7) 100%);
+  pointer-events: none;
+}
+
+.boen-hero__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: var(--boen-white);
+  padding: 0 1.5rem;
+  max-width: 700px;
+  animation: boenFadeUp 1s ease both;
+}
+
+@keyframes boenFadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.boen-hero__logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.boen-hero__logo-main {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  color: var(--boen-gold);
+  letter-spacing: 0.2em;
+  line-height: 1;
+}
+
+.boen-hero__logo-sub {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  font-style: italic;
+  color: rgba(200, 169, 110, 0.8);
+  letter-spacing: 0.08em;
+}
+
+.boen-hero__claim {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.3rem, 3.5vw, 2.2rem);
+  font-weight: 400;
+  line-height: 1.35;
+  margin-bottom: 0.75rem;
+  color: var(--boen-white);
+}
+
+.boen-hero__subtitle {
+  font-size: clamp(0.8rem, 1.8vw, 1rem);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--boen-gray);
+  margin-bottom: 2rem;
+}
+
+/* ===== CATEGORIES ===== */
+.boen-categories {
+  background: var(--boen-navy);
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.boen-categories__label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--boen-gray);
+  margin-bottom: 1.5rem;
+}
+
+.boen-categories__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.boen-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.5rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(200, 169, 110, 0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s;
+  color: var(--boen-white);
+}
+
+.boen-category-card:hover {
+  background: rgba(200, 169, 110, 0.1);
+  border-color: var(--boen-gold);
+  transform: translateY(-3px);
+}
+
+.boen-category-card__emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.boen-category-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--boen-gold);
+}
+
+/* ===== PAGE LAYOUT ===== */
+.boen-page {
+  min-height: calc(100vh - var(--boen-header-h) - 56px);
+}
+
+.boen-page__hero {
+  background: var(--boen-navy);
+  color: var(--boen-white);
+  padding: 4rem 1.5rem 3rem;
+  text-align: center;
+}
+
+.boen-page__hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  color: var(--boen-gold);
+  margin-bottom: 0.75rem;
+}
+
+.boen-page__hero-subtitle {
+  font-size: 1rem;
+  color: var(--boen-gray);
+  letter-spacing: 0.05em;
+}
+
+.boen-page__content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+/* ===== MERCATI ===== */
+.boen-mercati {
+  background: var(--boen-navy-dark);
+  color: var(--boen-white);
+  min-height: calc(100vh - var(--boen-header-h));
+}
+
+.boen-mercati__header {
+  padding: 3rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.boen-mercati__header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  color: var(--boen-gold);
+  margin-bottom: 0.5rem;
+}
+
+.boen-mercati__subtitle {
+  color: var(--boen-gray);
+  margin-bottom: 1rem;
+}
+
+.boen-mercati__filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(200, 169, 110, 0.1);
+  border: 1px solid rgba(200, 169, 110, 0.3);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+}
+
+.boen-mercati__filter-label {
+  color: var(--boen-gray);
+}
+
+.boen-mercati__filter-value {
+  color: var(--boen-gold);
+  font-weight: 600;
+}
+
+.boen-mercati__body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 0;
+  height: calc(100vh - var(--boen-header-h) - 180px);
+  min-height: 500px;
+}
+
+.boen-mercati__globe-wrap {
+  position: relative;
+  background: var(--boen-navy-dark);
+  overflow: hidden;
+}
+
+.boen-mercati__globe-wrap .globe3d {
+  width: 100%;
+  height: 100%;
+}
+
+.boen-mercati__hint {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(138, 154, 170, 0.7);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.boen-mercati__sidebar {
+  background: var(--boen-navy-light);
+  border-left: 1px solid rgba(200, 169, 110, 0.15);
+  overflow-y: auto;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.boen-mercati__legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.boen-mercati__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--boen-gray);
+}
+
+.boen-mercati__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.boen-mercati__dot--active {
+  background: var(--boen-gold);
+  box-shadow: 0 0 6px var(--boen-gold);
+}
+
+.boen-mercati__dot--dev {
+  background: #f0c040;
+}
+
+.boen-mercati__country-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.boen-mercati__country-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: rgba(248, 246, 242, 0.8);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.boen-mercati__country-item:hover {
+  background: rgba(200, 169, 110, 0.07);
+  border-color: rgba(200, 169, 110, 0.2);
+  color: var(--boen-white);
+}
+
+.boen-mercati__country-item--active {
+  background: rgba(200, 169, 110, 0.12);
+  border-color: rgba(200, 169, 110, 0.4);
+  color: var(--boen-gold);
+}
+
+.boen-mercati__popup {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(200, 169, 110, 0.25);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.boen-mercati__popup h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--boen-gold);
+}
+
+.boen-mercati__status {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.7rem;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.boen-mercati__status--active {
+  background: rgba(80, 200, 120, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(80, 200, 120, 0.3);
+}
+
+.boen-mercati__status--developing {
+  background: rgba(240, 192, 64, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(240, 192, 64, 0.3);
+}
+
+.boen-mercati__contacts-label {
+  font-size: 0.78rem;
+  color: var(--boen-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.boen-mercati__contacts-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.boen-mercati__contacts-list li {
+  background: rgba(200, 169, 110, 0.1);
+  color: var(--boen-gold-light);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(200, 169, 110, 0.2);
+}
+
+/* ===== MISSION ===== */
+.boen-mission__section {
+  margin-bottom: 3rem;
+}
+
+.boen-mission__section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--boen-navy);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--boen-gold);
+}
+
+.boen-mission__section p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #3a4a5a;
+}
+
+.boen-mission__values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.boen-mission__value-card {
+  background: var(--boen-navy);
+  color: var(--boen-white);
+  padding: 2rem 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.boen-mission__value-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.boen-mission__value-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--boen-gold);
+  margin-bottom: 0.75rem;
+}
+
+.boen-mission__value-card p {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--boen-gray);
+}
+
+/* ===== SERVIZI ===== */
+.boen-servizi__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.boen-service-card {
+  background: var(--boen-white);
+  border: 1px solid rgba(26, 35, 50, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.boen-service-card:hover {
+  box-shadow: 0 8px 30px rgba(26, 35, 50, 0.12);
+  transform: translateY(-2px);
+}
+
+.boen-service-card__icon {
+  font-size: 2.5rem;
+}
+
+.boen-service-card__title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--boen-navy);
+}
+
+.boen-service-card__text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #4a5a6a;
+  flex: 1;
+}
+
+/* ===== BUYER ===== */
+.boen-buyer__intro {
+  background: var(--boen-navy);
+  color: var(--boen-white);
+  padding: 4rem 1.5rem 3rem;
+  text-align: center;
+}
+
+.boen-buyer__intro h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  color: var(--boen-gold);
+  margin-bottom: 0.5rem;
+}
+
+.boen-buyer__subtitle {
+  font-size: 1.1rem;
+  color: var(--boen-gray);
+  margin-bottom: 1rem;
+}
+
+.boen-buyer__description {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(248, 246, 242, 0.75);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.boen-buyer__form-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.boen-buyer__form-wrap h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--boen-navy);
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--boen-gold);
+}
+
+.boen-buyer__success {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--boen-navy);
+}
+
+.boen-buyer__success p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* ===== MULTI-SELECT ===== */
+.boen-multiselect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.boen-multiselect__chip {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(26, 35, 50, 0.2);
+  border-radius: 20px;
+  background: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--boen-navy);
+  transition: all 0.15s;
+}
+
+.boen-multiselect__chip:hover {
+  border-color: var(--boen-gold);
+  color: var(--boen-navy);
+}
+
+.boen-multiselect__chip--selected {
+  background: var(--boen-navy);
+  border-color: var(--boen-navy);
+  color: var(--boen-gold);
+}
+
+/* ===== FORM ===== */
+.boen-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.boen-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.boen-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.boen-form__field label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #4a5a6a;
+  text-transform: uppercase;
+}
+
+.boen-form__field input,
+.boen-form__field select,
+.boen-form__field textarea {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(26, 35, 50, 0.2);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--boen-navy);
+  background: #fff;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.boen-form__field input:focus,
+.boen-form__field select:focus,
+.boen-form__field textarea:focus {
+  border-color: var(--boen-gold);
+  box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.12);
+}
+
+.boen-form__error {
+  font-size: 0.75rem;
+  color: #e53e3e;
+}
+
+/* ===== MODAL ===== */
+.boen-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 37, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.boen-modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.boen-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--boen-gray);
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s;
+}
+
+.boen-modal__close:hover {
+  color: var(--boen-navy);
+}
+
+.boen-modal__title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--boen-navy);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--boen-gold);
+}
+
+.boen-modal__success {
+  text-align: center;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.boen-modal__success-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--boen-navy);
+  color: var(--boen-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.boen-modal__success-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--boen-navy);
+  line-height: 1.5;
+}
+
+.boen-modal__success-body {
+  font-size: 0.9rem;
+  color: #4a5a6a;
+  line-height: 1.7;
+}
+
+/* ===== GALLERIA ===== */
+.boen-galleria__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 2.5rem 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.boen-gallery-card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 3/2;
+  background: var(--boen-navy-light);
+}
+
+.boen-gallery-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+
+.boen-gallery-card:hover img {
+  transform: scale(1.04);
+}
+
+.boen-gallery-card__label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(transparent, rgba(17, 24, 37, 0.85));
+  color: var(--boen-white);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ===== CONTATTI ===== */
+.boen-contatti__body {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.boen-contatti__info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.boen-contatti__info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.boen-contatti__info-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.boen-contatti__info-item strong {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--boen-gold-dark);
+  margin-bottom: 0.2rem;
+}
+
+.boen-contatti__info-item p {
+  font-size: 0.9rem;
+  color: #4a5a6a;
+}
+
+/* ===== CREDITS ===== */
+.boen-credits__body {
+  text-align: center;
+}
+
+.boen-credits__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1.5rem auto;
+  max-width: 400px;
+}
+
+.boen-credits__list li {
+  font-size: 0.9rem;
+  color: #4a5a6a;
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(26, 35, 50, 0.08);
+}
+
+.boen-credits__copy {
+  font-size: 0.8rem;
+  color: var(--boen-gray);
+  margin-top: 2rem;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .boen-nav {
+    display: none;
+    position: fixed;
+    top: var(--boen-header-h);
+    left: 0;
+    right: 0;
+    background: rgba(26, 35, 50, 0.98);
+    flex-direction: column;
+    padding: 1rem;
+    gap: 0.25rem;
+    border-bottom: 1px solid rgba(200, 169, 110, 0.2);
+    z-index: 999;
+  }
+
+  .boen-nav--open {
+    display: flex;
+  }
+
+  .boen-hamburger {
+    display: flex;
+  }
+
+  .boen-categories__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .boen-mission__values {
+    grid-template-columns: 1fr;
+  }
+
+  .boen-servizi__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .boen-mercati__body {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50vh auto;
+    height: auto;
+  }
+
+  .boen-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .boen-contatti__body {
+    grid-template-columns: 1fr;
+  }
+
+  .boen-galleria__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .boen-modal {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .boen-galleria__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .boen-categories__grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
