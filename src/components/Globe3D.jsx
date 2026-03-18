@@ -250,6 +250,14 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     const group = new THREE.Group();
     scene.add(group);
 
+    // Start with Italy facing the camera (lat≈43, lng≈12)
+    const italyPos = latLngToVec3(43, 12, 1);
+    const initY = Math.atan2(-italyPos.x, italyPos.z);
+    const initX = Math.atan2(italyPos.y, Math.sqrt(italyPos.x * italyPos.x + italyPos.z * italyPos.z));
+    const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), initY);
+    const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), initX);
+    group.quaternion.copy(qX.multiply(qY));
+
     // Expose to flyTo useEffect
     sceneRef.current = { group, camera, MIN_Z, BASE_Z };
 
