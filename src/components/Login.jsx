@@ -17,9 +17,11 @@ export default function Login({ onLogin, onClose }) {
   return (
     <div className="login-overlay">
       <div className="login-card">
-        <button className="form-close" onClick={onClose} aria-label="Chiudi">
-          &times;
-        </button>
+        {onClose && (
+          <button className="form-close" onClick={onClose} aria-label="Chiudi">
+            &times;
+          </button>
+        )}
         <h2 className="form-title">Area Riservata</h2>
         <p className="form-subtitle">Accesso amministratore</p>
 

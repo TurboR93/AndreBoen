@@ -11,7 +11,8 @@ export const initialPoints = [
     lastName: "Bianchi",
     phone: "+39 041 523 4567",
     email: "m.bianchi@serenissimawine.it",
-    role: "Titolare"
+    role: "Titolare",
+    sector: "wine"
   },
   {
     id: 2,
@@ -24,7 +25,8 @@ export const initialPoints = [
     lastName: "Ferretti",
     phone: "+39 045 876 5432",
     email: "g.ferretti@valpolicellaclassica.it",
-    role: "Direttrice Commerciale"
+    role: "Direttrice Commerciale",
+    sector: "wine"
   },
   {
     id: 3,
@@ -37,7 +39,8 @@ export const initialPoints = [
     lastName: "Colombo",
     phone: "+39 0444 678 901",
     email: "a.colombo@collibericiwines.it",
-    role: "Responsabile Vendite"
+    role: "Responsabile Vendite",
+    sector: "wine"
   },
   {
     id: 4,
@@ -50,7 +53,8 @@ export const initialPoints = [
     lastName: "Russo",
     phone: "+39 045 521 345",
     email: "e.russo@amaronedelveneto.it",
-    role: "Export Manager"
+    role: "Export Manager",
+    sector: "wine"
   },
   {
     id: 5,
@@ -63,7 +67,8 @@ export const initialPoints = [
     lastName: "De Santis",
     phone: "+39 0422 456 789",
     email: "l.desantis@proseccohills.it",
-    role: "Enologo"
+    role: "Enologo",
+    sector: "wine"
   },
   {
     id: 6,
@@ -76,7 +81,8 @@ export const initialPoints = [
     lastName: "Moretti",
     phone: "+39 045 768 0123",
     email: "f.moretti@soavesuperiore.it",
-    role: "Responsabile Produzione"
+    role: "Responsabile Produzione",
+    sector: "wine"
   },
   {
     id: 7,
@@ -89,7 +95,8 @@ export const initialPoints = [
     lastName: "Zanetti",
     phone: "+39 0424 234 567",
     email: "r.zanetti@distilleriaveneta.it",
-    role: "Direttore Generale"
+    role: "Direttore Generale",
+    sector: "spirits"
   },
   {
     id: 8,
@@ -102,7 +109,8 @@ export const initialPoints = [
     lastName: "Pellegrini",
     phone: "+39 045 610 2345",
     email: "c.pellegrini@estveronese.it",
-    role: "Brand Ambassador"
+    role: "Brand Ambassador",
+    sector: "wine"
   },
   {
     id: 9,
@@ -115,7 +123,8 @@ export const initialPoints = [
     lastName: "Galli",
     phone: "+39 0442 345 678",
     email: "m.galli@agricolapianura.it",
-    role: "Titolare"
+    role: "Titolare",
+    sector: "olive oil"
   },
   {
     id: 10,
@@ -128,7 +137,8 @@ export const initialPoints = [
     lastName: "Trevisan",
     phone: "+39 0438 567 890",
     email: "s.trevisan@cvdocg.it",
-    role: "Marketing Manager"
+    role: "Marketing Manager",
+    sector: "wine"
   },
   {
     id: 11,
@@ -141,7 +151,8 @@ export const initialPoints = [
     lastName: "Rinaldi",
     phone: "+39 045 611 2233",
     email: "p.rinaldi@garganega.it",
-    role: "Enologo"
+    role: "Enologo",
+    sector: "wine"
   },
   {
     id: 12,
@@ -154,7 +165,8 @@ export const initialPoints = [
     lastName: "Mantovani",
     phone: "+39 045 721 0456",
     email: "a.mantovani@bardolinochiaretto.it",
-    role: "Responsabile Estero"
+    role: "Responsabile Estero",
+    sector: "wine"
   },
 
   // === FRIULI VENEZIA GIULIA ===
@@ -169,7 +181,8 @@ export const initialPoints = [
     lastName: "Benussi",
     phone: "+39 040 345 6789",
     email: "g.benussi@carsowine.it",
-    role: "Titolare"
+    role: "Titolare",
+    sector: "wine"
   },
   {
     id: 14,
@@ -182,7 +195,8 @@ export const initialPoints = [
     lastName: "Del Torre",
     phone: "+39 0432 567 890",
     email: "m.deltorre@friulanodoc.it",
-    role: "Direttrice Acquisti"
+    role: "Direttrice Acquisti",
+    sector: "wine"
   },
   {
     id: 15,
@@ -195,7 +209,8 @@ export const initialPoints = [
     lastName: "Princic",
     phone: "+39 0481 234 567",
     email: "f.princic@colliowine.it",
-    role: "Export Manager"
+    role: "Export Manager",
+    sector: "wine"
   },
   {
     id: 16,
@@ -208,7 +223,8 @@ export const initialPoints = [
     lastName: "Fabbro",
     phone: "+39 0434 678 901",
     email: "a.fabbro@livenzawines.it",
-    role: "Responsabile Commerciale"
+    role: "Responsabile Commerciale",
+    sector: "wine"
   },
   {
     id: 17,
@@ -221,7 +237,8 @@ export const initialPoints = [
     lastName: "Felluga",
     phone: "+39 0481 678 234",
     email: "s.felluga@collioorientali.it",
-    role: "Enologo"
+    role: "Enologo",
+    sector: "wine"
   },
   {
     id: 18,
@@ -234,7 +251,8 @@ export const initialPoints = [
     lastName: "Dorigo",
     phone: "+39 0432 733 456",
     email: "l.dorigo@colliorientali.it",
-    role: "Titolare"
+    role: "Titolare",
+    sector: "wine"
   },
   {
     id: 19,
@@ -247,7 +265,8 @@ export const initialPoints = [
     lastName: "Pittaro",
     phone: "+39 0481 990 123",
     email: "m.pittaro@isozovalley.it",
-    role: "Agronomo"
+    role: "Agronomo",
+    sector: "wine"
   },
   {
     id: 20,
@@ -260,7 +279,8 @@ export const initialPoints = [
     lastName: "Kravina",
     phone: "+39 0428 234 567",
     email: "t.kravina@alpineborder.it",
-    role: "Area Manager"
+    role: "Area Manager",
+    sector: "wine"
   },
 
   // === SLOVENIA ===
@@ -275,7 +295,8 @@ export const initialPoints = [
     lastName: "Horvat",
     phone: "+386 1 234 5678",
     email: "m.horvat@vinskaklet.si",
-    role: "Direktor"
+    role: "Direktor",
+    sector: "wine"
   },
   {
     id: 22,
@@ -288,7 +309,8 @@ export const initialPoints = [
     lastName: "Kovač",
     phone: "+386 2 345 6789",
     email: "a.kovac@stajerska-vina.si",
-    role: "Vodja Prodaje"
+    role: "Vodja Prodaje",
+    sector: "wine"
   },
   {
     id: 23,
@@ -301,7 +323,8 @@ export const initialPoints = [
     lastName: "Simčič",
     phone: "+386 5 678 9012",
     email: "b.simcic@goriskabrda.si",
-    role: "Lastnik & Enolog"
+    role: "Lastnik & Enolog",
+    sector: "wine"
   },
   {
     id: 24,
@@ -314,7 +337,8 @@ export const initialPoints = [
     lastName: "Novak",
     phone: "+386 3 456 7890",
     email: "p.novak@celjskaklet.si",
-    role: "Komercialistka"
+    role: "Komercialistka",
+    sector: "wine"
   },
   {
     id: 25,
@@ -327,7 +351,8 @@ export const initialPoints = [
     lastName: "Bertoncelj",
     phone: "+386 5 612 3456",
     email: "r.bertoncelj@vinakoper.si",
-    role: "Export Manager"
+    role: "Export Manager",
+    sector: "wine"
   },
   {
     id: 26,
@@ -340,7 +365,8 @@ export const initialPoints = [
     lastName: "Mlečnik",
     phone: "+386 5 395 1234",
     email: "u.mlecnik@brdawine.si",
-    role: "Enologinja"
+    role: "Enologinja",
+    sector: "wine"
   },
   {
     id: 27,
@@ -353,7 +379,8 @@ export const initialPoints = [
     lastName: "Puklavec",
     phone: "+386 2 789 0123",
     email: "g.puklavec@pulluswines.si",
-    role: "Direktor Izvoza"
+    role: "Direktor Izvoza",
+    sector: "wine"
   },
   {
     id: 28,
@@ -366,7 +393,8 @@ export const initialPoints = [
     lastName: "Slavec",
     phone: "+386 5 641 2345",
     email: "m.slavec@istarskavina.si",
-    role: "Vodja Trženja"
+    role: "Vodja Trženja",
+    sector: "wine"
   },
 
   // === MONDO (clienti internazionali esistenti) ===
@@ -381,7 +409,8 @@ export const initialPoints = [
     lastName: "Marchesi",
     phone: "+39 055 234 5678",
     email: "f.marchesi@marchesichianti.it",
-    role: "Export Manager"
+    role: "Export Manager",
+    sector: "wine"
   },
   {
     id: 30,
@@ -394,7 +423,8 @@ export const initialPoints = [
     lastName: "Ferrara",
     phone: "+39 051 876 5432",
     email: "g.ferrara@emilianavini.it",
-    role: "Direttrice Commerciale"
+    role: "Direttrice Commerciale",
+    sector: "wine"
   },
   {
     id: 31,
@@ -407,7 +437,8 @@ export const initialPoints = [
     lastName: "Barilla",
     phone: "+39 0521 345 678",
     email: "e.barilla@casavinparma.it",
-    role: "Brand Ambassador"
+    role: "Brand Ambassador",
+    sector: "food"
   },
   {
     id: 32,
@@ -420,7 +451,8 @@ export const initialPoints = [
     lastName: "D'Amico",
     phone: "+39 0862 456 789",
     email: "l.damico@podereabr.it",
-    role: "Enologo"
+    role: "Enologo",
+    sector: "olive oil"
   },
   {
     id: 33,
@@ -433,7 +465,8 @@ export const initialPoints = [
     lastName: "Duval",
     phone: "+33 1 42 56 78 90",
     email: "p.duval@maisonduval.fr",
-    role: "Directeur Import"
+    role: "Directeur Import",
+    sector: "wine"
   },
   {
     id: 34,
@@ -446,7 +479,8 @@ export const initialPoints = [
     lastName: "Moreau",
     phone: "+33 5 56 78 90 12",
     email: "c.moreau@girondesel.fr",
-    role: "Responsable Achats"
+    role: "Responsable Achats",
+    sector: "wine"
   },
   {
     id: 35,
@@ -459,7 +493,8 @@ export const initialPoints = [
     lastName: "Müller",
     phone: "+49 221 567 8901",
     email: "s.mueller@rheinlandwein.de",
-    role: "Geschäftsführer"
+    role: "Geschäftsführer",
+    sector: "wine"
   },
   {
     id: 36,
@@ -472,7 +507,8 @@ export const initialPoints = [
     lastName: "Schmidt",
     phone: "+49 89 234 5678",
     email: "a.schmidt@bwimport.de",
-    role: "Einkaufsleiterin"
+    role: "Einkaufsleiterin",
+    sector: "wine"
   },
   {
     id: 37,
@@ -486,6 +522,7 @@ export const initialPoints = [
     phone: "+44 20 7946 0958",
     email: "j.crawford@thamesvalleywines.co.uk",
     role: "Head of Procurement",
+    sector: "wine",
     source: "client-form"
   },
   {
@@ -499,7 +536,8 @@ export const initialPoints = [
     lastName: "MacLeod",
     phone: "+44 131 496 0832",
     email: "f.macleod@highlandcellar.co.uk",
-    role: "Buyer"
+    role: "Buyer",
+    sector: "spirits"
   },
   {
     id: 39,
@@ -513,6 +551,7 @@ export const initialPoints = [
     phone: "+1 212 555 0147",
     email: "r.chen@manhattanfinewines.com",
     role: "VP of Imports",
+    sector: "wine",
     source: "client-form"
   },
   {
@@ -526,7 +565,8 @@ export const initialPoints = [
     lastName: "Johnson",
     phone: "+1 415 555 0293",
     email: "s.johnson@pacificvintners.com",
-    role: "Import Director"
+    role: "Import Director",
+    sector: "wine"
   },
   {
     id: 41,
@@ -539,7 +579,8 @@ export const initialPoints = [
     lastName: "Torres",
     phone: "+1 310 555 0184",
     email: "m.torres@socalwinedist.com",
-    role: "Operations Manager"
+    role: "Operations Manager",
+    sector: "wine"
   },
   {
     id: 42,
@@ -552,7 +593,8 @@ export const initialPoints = [
     lastName: "Tremblay",
     phone: "+1 416 555 0376",
     email: "d.tremblay@ontariopremium.ca",
-    role: "Director of Italian Portfolio"
+    role: "Director of Italian Portfolio",
+    sector: "wine"
   },
   {
     id: 43,
@@ -566,6 +608,7 @@ export const initialPoints = [
     phone: "+81 3 5555 0812",
     email: "y.tanaka@sakurawine.jp",
     role: "Import Manager",
+    sector: "wine",
     source: "client-form"
   },
   {
@@ -580,6 +623,7 @@ export const initialPoints = [
     phone: "+86 21 5555 6789",
     email: "w.zhang@shanghaiprestige.cn",
     role: "General Manager",
+    sector: "wine",
     source: "client-form"
   },
   {
@@ -593,7 +637,8 @@ export const initialPoints = [
     lastName: "Tan",
     phone: "+65 6555 4321",
     email: "lm.tan@asiafinewines.sg",
-    role: "Regional Director"
+    role: "Regional Director",
+    sector: "food"
   },
   {
     id: 46,
@@ -607,6 +652,7 @@ export const initialPoints = [
     phone: "+61 2 9555 7890",
     email: "j.obrien@southerncrosswines.com.au",
     role: "Chief Buyer",
+    sector: "wine",
     source: "client-form"
   },
   {
@@ -620,7 +666,8 @@ export const initialPoints = [
     lastName: "Mendoza",
     phone: "+56 2 2555 3456",
     email: "c.mendoza@vinaandina.cl",
-    role: "Director Comercial"
+    role: "Director Comercial",
+    sector: "wine"
   },
   {
     id: 48,
@@ -634,6 +681,7 @@ export const initialPoints = [
     phone: "+54 11 5555 8901",
     email: "m.gutierrez@bawineexchange.ar",
     role: "Gerente de Importaciones",
+    sector: "wine",
     source: "client-form"
   },
   {
@@ -647,7 +695,8 @@ export const initialPoints = [
     lastName: "Oliveira",
     phone: "+55 11 5555 2345",
     email: "r.oliveira@spenoteca.com.br",
-    role: "Diretor de Compras"
+    role: "Diretor de Compras",
+    sector: "food"
   },
   {
     id: 50,
@@ -660,7 +709,8 @@ export const initialPoints = [
     lastName: "Lindqvist",
     phone: "+46 8 555 67 89",
     email: "e.lindqvist@nordicwine.se",
-    role: "Inköpschef"
+    role: "Inköpschef",
+    sector: "wine"
   },
   {
     id: 51,
@@ -673,7 +723,8 @@ export const initialPoints = [
     lastName: "De Vries",
     phone: "+31 20 555 6789",
     email: "j.devries@amswine.nl",
-    role: "Hoofd Inkoop"
+    role: "Hoofd Inkoop",
+    sector: "wine"
   },
   {
     id: 52,
@@ -686,7 +737,8 @@ export const initialPoints = [
     lastName: "Brunner",
     phone: "+41 44 555 67 89",
     email: "t.brunner@zurichwein.ch",
-    role: "Leiter Einkauf Italien"
+    role: "Leiter Einkauf Italien",
+    sector: "wine"
   },
   {
     id: 53,
@@ -699,7 +751,8 @@ export const initialPoints = [
     lastName: "García",
     phone: "+34 91 555 67 89",
     email: "p.garcia@bodegaiberica.es",
-    role: "Responsable de Compras"
+    role: "Responsable de Compras",
+    sector: "food"
   },
   {
     id: 54,
@@ -712,7 +765,8 @@ export const initialPoints = [
     lastName: "Papadopoulos",
     phone: "+30 21 0555 6789",
     email: "n.papadopoulos@aegeanwine.gr",
-    role: "Managing Director"
+    role: "Managing Director",
+    sector: "wine"
   },
   {
     id: 55,
@@ -726,6 +780,7 @@ export const initialPoints = [
     phone: "+971 4 555 6789",
     email: "a.alrashid@dubailuxwine.ae",
     role: "Procurement Director",
+    sector: "spirits",
     source: "client-form"
   },
   {
@@ -740,6 +795,7 @@ export const initialPoints = [
     phone: "+82 2 555 6789",
     email: "jh.park@seoulpremiumwine.kr",
     role: "Import Division Manager",
+    sector: "wine",
     source: "client-form"
   },
   {
@@ -753,7 +809,8 @@ export const initialPoints = [
     lastName: "Reyes",
     phone: "+52 55 5555 6789",
     email: "a.reyes@mexvinoselectos.mx",
-    role: "Directora de Importaciones"
+    role: "Directora de Importaciones",
+    sector: "spirits"
   },
   {
     id: 58,
@@ -766,7 +823,8 @@ export const initialPoints = [
     lastName: "Nkosi",
     phone: "+27 21 555 6789",
     email: "t.nkosi@capetownwine.co.za",
-    role: "Head of European Imports"
+    role: "Head of European Imports",
+    sector: "wine"
   },
 
   // === EXTRA VENETO/FVG ===
@@ -781,7 +839,8 @@ export const initialPoints = [
     lastName: "Bertoldi",
     phone: "+39 045 647 0123",
     email: "d.bertoldi@vinilago.it",
-    role: "Sommelier & Buyer"
+    role: "Sommelier & Buyer",
+    sector: "wine"
   },
   {
     id: 60,
@@ -794,7 +853,8 @@ export const initialPoints = [
     lastName: "Sartor",
     phone: "+39 0423 890 123",
     email: "v.sartor@marcatrevigiana.it",
-    role: "Direttrice Marketing"
+    role: "Direttrice Marketing",
+    sector: "wine"
   },
   {
     id: 61,
@@ -807,7 +867,8 @@ export const initialPoints = [
     lastName: "Fraccaroli",
     phone: "+39 045 795 0456",
     email: "n.fraccaroli@custozadoc.it",
-    role: "Titolare"
+    role: "Titolare",
+    sector: "wine"
   },
   {
     id: 62,
@@ -820,7 +881,8 @@ export const initialPoints = [
     lastName: "Bisol",
     phone: "+39 0423 975 123",
     email: "g.bisol@cartizzepremium.it",
-    role: "Enologo Capo"
+    role: "Enologo Capo",
+    sector: "wine"
   },
   {
     id: 63,
@@ -833,7 +895,8 @@ export const initialPoints = [
     lastName: "Tessari",
     phone: "+39 045 739 0678",
     email: "i.tessari@durellolessini.it",
-    role: "Responsabile Export"
+    role: "Responsabile Export",
+    sector: "wine"
   },
   {
     id: 64,
@@ -846,7 +909,8 @@ export const initialPoints = [
     lastName: "Zuliani",
     phone: "+39 0432 785 012",
     email: "m.zuliani@collifriulani.it",
-    role: "Agronomo Bio"
+    role: "Agronomo Bio",
+    sector: "olive oil"
   },
   {
     id: 65,
@@ -859,7 +923,8 @@ export const initialPoints = [
     lastName: "Nonino",
     phone: "+39 0432 940 567",
     email: "s.nonino@friulicolli.it",
-    role: "Direttrice Vendite"
+    role: "Direttrice Vendite",
+    sector: "wine"
   },
   {
     id: 66,
@@ -872,7 +937,8 @@ export const initialPoints = [
     lastName: "Lupinc",
     phone: "+39 040 271 0345",
     email: "b.lupinc@terredelcarso.it",
-    role: "Viticoltore"
+    role: "Viticoltore",
+    sector: "wine"
   },
   {
     id: 67,
@@ -885,6 +951,7 @@ export const initialPoints = [
     lastName: "Batič",
     phone: "+386 5 301 2345",
     email: "j.batic@vipavska.si",
-    role: "Lastnik"
+    role: "Lastnik",
+    sector: "wine"
   }
 ]
