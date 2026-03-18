@@ -412,9 +412,9 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
           const dx = e.clientX - prevMouse.x;
           const dy = e.clientY - prevMouse.y;
           if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDrag = true;
-          group.rotation.y += dx * 0.005;
-          group.rotation.x += dy * 0.005;
-          velocity = { x: dy * 0.005, y: dx * 0.005 };
+          group.rotation.y -= dx * 0.005;
+          group.rotation.x -= dy * 0.005;
+          velocity = { x: -dy * 0.005, y: -dx * 0.005 };
           prevMouse = { x: e.clientX, y: e.clientY };
           return;
         }
@@ -472,9 +472,9 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
         if (!prevTouch) return;
         const dx = e.touches[0].clientX - prevTouch.clientX;
         const dy = e.touches[0].clientY - prevTouch.clientY;
-        group.rotation.y += dx * 0.005;
-        group.rotation.x += dy * 0.005;
-        velocity = { x: dy * 0.003, y: dx * 0.003 };
+        group.rotation.y -= dx * 0.005;
+        group.rotation.x -= dy * 0.005;
+        velocity = { x: -dy * 0.003, y: -dx * 0.003 };
         prevTouch = e.touches[0];
       };
       const onTouchEnd = () => { prevTouch = null; };
