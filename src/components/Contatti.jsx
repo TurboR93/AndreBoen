@@ -19,7 +19,7 @@ export default function Contatti() {
 
   return (
     <div className="boen-page boen-contatti">
-      <div className="boen-page__hero">
+      <div className="boen-page__hero boen-page__hero--contatti">
         <h1>{ct.title}</h1>
         <p className="boen-page__hero-subtitle">{ct.subtitle}</p>
       </div>

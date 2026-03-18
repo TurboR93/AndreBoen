@@ -12,7 +12,7 @@ export default function Mission() {
 
   return (
     <div className="boen-page boen-mission">
-      <div className="boen-page__hero">
+      <div className="boen-page__hero boen-page__hero--mission">
         <h1>{mt.title}</h1>
       </div>
 

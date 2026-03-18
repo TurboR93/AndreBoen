@@ -1698,6 +1698,58 @@ body {
   color: var(--boen-white);
   padding: 4rem 1.5rem 3rem;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hero images */
+.boen-page__hero--mission,
+.boen-page__hero--servizi,
+.boen-page__hero--buyer,
+.boen-page__hero--contatti {
+  padding: 6rem 1.5rem 5rem;
+  background-size: cover;
+  background-position: center;
+}
+
+.boen-page__hero--mission::before,
+.boen-page__hero--servizi::before,
+.boen-page__hero--buyer::before,
+.boen-page__hero--contatti::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(17, 24, 37, 0.82), rgba(17, 24, 37, 0.92));
+  z-index: 0;
+}
+
+.boen-page__hero--mission > *,
+.boen-page__hero--servizi > *,
+.boen-page__hero--buyer > *,
+.boen-page__hero--contatti > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Mission: Italian export — container ship with Italian goods */
+.boen-page__hero--mission {
+  background-image: url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1400&q=80');
+}
+
+/* Servizi: wine consulting/business context */
+.boen-page__hero--servizi {
+  background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1400&q=80');
+}
+
+/* Buyer: restaurant CEO / fine dining professional */
+.boen-page__hero--buyer {
+  background-image: url('https://images.unsplash.com/photo-1560624052-449f5ddf0c31?w=1400&q=80');
+}
+
+/* Contatti: young professional at elegant food event */
+.boen-page__hero--contatti {
+  background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&q=80');
+  background-position: center 30%;
 }
 
 .boen-page__hero h1 {
@@ -2031,6 +2083,8 @@ body {
   color: var(--boen-white);
   padding: 4rem 1.5rem 3rem;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .boen-buyer__intro h1 {

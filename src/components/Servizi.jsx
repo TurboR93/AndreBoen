@@ -22,7 +22,7 @@ export default function Servizi() {
 
   return (
     <div className="boen-page boen-servizi">
-      <div className="boen-page__hero">
+      <div className="boen-page__hero boen-page__hero--servizi">
         <h1>{st.title}</h1>
         <p className="boen-page__hero-subtitle">{st.subtitle}</p>
       </div>

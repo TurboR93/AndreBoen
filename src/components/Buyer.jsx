@@ -63,7 +63,7 @@ export default function Buyer() {
 
   return (
     <div className="boen-page boen-buyer">
-      <div className="boen-buyer__intro">
+      <div className="boen-buyer__intro boen-page__hero--buyer">
         <h1>{bt.title}</h1>
         <p className="boen-buyer__subtitle">{bt.subtitle}</p>
         <p className="boen-buyer__description">{bt.description}</p>
