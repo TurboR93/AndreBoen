@@ -428,8 +428,8 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
         const rect = mount.getBoundingClientRect();
         const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;  // -1 to 1
         const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-        camTarget.x = nx * 0.3;   // horizontal camera shift
-        camTarget.y = -ny * 0.2;  // vertical camera shift (inverted)
+        camTarget.x = nx * 0.35;
+        camTarget.y = -ny * 0.25;
       };
       const onPassiveLeave = () => {
         camTarget.x = 0;
@@ -556,8 +556,8 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
 
       if (passive) {
         // Passive: globe stays on Italy, camera shifts with cursor
-        camCurrent.x += (camTarget.x - camCurrent.x) * 0.06;
-        camCurrent.y += (camTarget.y - camCurrent.y) * 0.06;
+        camCurrent.x += (camTarget.x - camCurrent.x) * 0.02;
+        camCurrent.y += (camTarget.y - camCurrent.y) * 0.02;
         camera.position.x = camCurrent.x;
         camera.position.y = camCurrent.y;
         camera.lookAt(0, 0, 0);
