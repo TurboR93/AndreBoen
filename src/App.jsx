@@ -1,5 +1,5 @@
-import { useState, lazy, Suspense } from 'react';
-import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { LanguageProvider } from './LanguageContext';
 import BoenHeader from './components/BoenHeader';
 import Login from './components/Login';
@@ -14,6 +14,29 @@ const Galleria = lazy(() => import('./components/Galleria'));
 const Contatti = lazy(() => import('./components/Contatti'));
 const Credits = lazy(() => import('./components/Credits'));
 
+function PageTransition({ children }) {
+  const location = useLocation();
+  const ref = useRef(null);
+  const prevKey = useRef(location.key);
+
+  useEffect(() => {
+    if (location.key !== prevKey.current) {
+      prevKey.current = location.key;
+      const el = ref.current;
+      if (!el) return;
+      el.classList.remove('boen-page-enter');
+      void el.offsetWidth; // force reflow
+      el.classList.add('boen-page-enter');
+    }
+  }, [location.key]);
+
+  return (
+    <div ref={ref} className="boen-page-transition boen-page-enter">
+      {children}
+    </div>
+  );
+}
+
 function PublicLayout({ children }) {
   const navigate = useNavigate();
   return (
@@ -21,7 +44,7 @@ function PublicLayout({ children }) {
       <BoenHeader />
       <main className="boen-main">
         <Suspense fallback={<div className="boen-loading">…</div>}>
-          {children}
+          <PageTransition>{children}</PageTransition>
         </Suspense>
       </main>
       <footer className="boen-footer">
