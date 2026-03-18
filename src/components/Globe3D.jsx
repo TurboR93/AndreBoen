@@ -424,19 +424,18 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     let camCurrent = { x: 0, y: 0 }; // smoothed current offset
 
     if (passive) {
+      // Listen on window so overlaying elements don't cause gaps
       const onPassiveMove = e => {
         const rect = mount.getBoundingClientRect();
-        const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;  // -1 to 1
-        const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+        // Compute position relative to globe center, clamped to [-1, 1]
+        const rawX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+        const rawY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+        const nx = Math.max(-1, Math.min(1, rawX));
+        const ny = Math.max(-1, Math.min(1, rawY));
         camTarget.x = nx * 0.35;
         camTarget.y = -ny * 0.25;
       };
-      const onPassiveLeave = () => {
-        camTarget.x = 0;
-        camTarget.y = 0;
-      };
-      mount.addEventListener('mousemove', onPassiveMove);
-      mount.addEventListener('mouseleave', onPassiveLeave);
+      window.addEventListener('mousemove', onPassiveMove);
       mount.style.cursor = 'default';
     } else {
       // Interactive mode: drag, click, hover, zoom
