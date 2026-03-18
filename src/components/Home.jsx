@@ -21,7 +21,7 @@ export default function Home() {
     <div className="boen-home">
       <section className="boen-hero">
         <div className="boen-hero__globe">
-          <Globe3D markers={[]} />
+          <Globe3D markers={[]} passive />
         </div>
         <div className="boen-hero__overlay" />
         <div className="boen-hero__content">

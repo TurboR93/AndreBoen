@@ -197,7 +197,7 @@ const SECTOR_COLORS = {
   'olive oil': { color: 0x7ab56a, emissive: 0x3a6a2e },
 };
 
-export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, rotationSpeed = 0.0015, flyTo = null, showSectors = false, hoverControl = false }) {
+export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, rotationSpeed = 0.0015, flyTo = null, showSectors = false, passive = false }) {
   const mountRef = useRef(null);
   const sceneRef = useRef(null); // { group, camera, MIN_Z, BASE_Z }
 
@@ -376,137 +376,124 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     let didDrag = false;
     let prevMouse = { x: 0, y: 0 };
     let velocity = { x: 0, y: 0 };
-    let targetVelocity = { x: 0, y: 0 };
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    const onMouseDown = e => {
-      if (hoverControl) return;
-      isDragging = true;
-      didDrag = false;
-      prevMouse = { x: e.clientX, y: e.clientY };
-      velocity = { x: 0, y: 0 };
-    };
+    // Passive mode: cursor influences rotation with heavy easing
+    let cursorInfluence = { x: 0, y: 0 }; // target influence from cursor
 
-    const onMouseMove = e => {
-      const rect = mount.getBoundingClientRect();
-
-      if (hoverControl) {
-        // Cursor position relative to center → eased target velocity
-        const cx = ((e.clientX - rect.left) / W - 0.5) * 2; // -1 to 1
-        const cy = ((e.clientY - rect.top) / H - 0.5) * 2;
-        targetVelocity.y = cx * 0.006;
-        targetVelocity.x = cy * 0.001;
-
-        // Still do hover highlight
-        mouse.x = cx;
-        mouse.y = -cy;
-        raycaster.setFromCamera(mouse, camera);
-        const hits = raycaster.intersectObject(globe);
-        if (hits.length > 0 && hits[0].uv) {
-          const uv = hits[0].uv;
-          const lng = uv.x * 360 - 180;
-          const lat = 90 - uv.y * 180;
-          let foundId = null;
-          for (const feat of marketFeatures) {
-            if (pointInGeometry(lng, lat, feat.geometry)) { foundId = feat.id; break; }
-          }
-          updateHighlight(foundId);
-          mount.style.cursor = foundId ? 'pointer' : 'default';
-        } else {
-          updateHighlight(null);
-          mount.style.cursor = 'default';
-        }
-        return;
-      }
-
-      if (isDragging) {
-        const dx = e.clientX - prevMouse.x;
-        const dy = e.clientY - prevMouse.y;
-        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDrag = true;
-        group.rotation.y += dx * 0.005;
-        group.rotation.x += dy * 0.005;
-        velocity = { x: dy * 0.005, y: dx * 0.005 };
+    if (passive) {
+      const onPassiveMove = e => {
+        const rect = mount.getBoundingClientRect();
+        const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;  // -1 to 1
+        const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+        cursorInfluence.y = nx * 0.003;  // horizontal cursor → Y rotation speed
+        cursorInfluence.x = ny * 0.001;  // vertical cursor → slight X influence
+      };
+      const onPassiveLeave = () => {
+        cursorInfluence.x = 0;
+        cursorInfluence.y = 0;
+      };
+      mount.addEventListener('mousemove', onPassiveMove);
+      mount.addEventListener('mouseleave', onPassiveLeave);
+      mount.style.cursor = 'default';
+    } else {
+      // Interactive mode: drag, click, hover, zoom
+      const onMouseDown = e => {
+        isDragging = true;
+        didDrag = false;
         prevMouse = { x: e.clientX, y: e.clientY };
-        return;
-      }
+        velocity = { x: 0, y: 0 };
+      };
 
-      // Hover → highlight market countries
-      mouse.x = ((e.clientX - rect.left) / W) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / H) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObject(globe);
-
-      if (hits.length > 0 && hits[0].uv) {
-        const uv = hits[0].uv;
-        const lng = uv.x * 360 - 180;
-        const lat = 90 - uv.y * 180;
-
-        let foundId = null;
-        for (const feat of marketFeatures) {
-          if (pointInGeometry(lng, lat, feat.geometry)) {
-            foundId = feat.id;
-            break;
-          }
+      const onMouseMove = e => {
+        if (isDragging) {
+          const dx = e.clientX - prevMouse.x;
+          const dy = e.clientY - prevMouse.y;
+          if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDrag = true;
+          group.rotation.y += dx * 0.005;
+          group.rotation.x += dy * 0.005;
+          velocity = { x: dy * 0.005, y: dx * 0.005 };
+          prevMouse = { x: e.clientX, y: e.clientY };
+          return;
         }
-        updateHighlight(foundId);
-        mount.style.cursor = foundId ? 'pointer' : 'grab';
-      } else {
-        updateHighlight(null);
-        mount.style.cursor = 'default';
-      }
-    };
 
-    const onMouseUp = e => {
-      if (hoverControl) return;
-      if (!didDrag && onMarkerClick) {
+        // Hover → highlight market countries
         const rect = mount.getBoundingClientRect();
         mouse.x = ((e.clientX - rect.left) / W) * 2 - 1;
         mouse.y = -((e.clientY - rect.top) / H) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
-        const hits = raycaster.intersectObjects(dotMeshes);
-        if (hits.length > 0) onMarkerClick(hits[0].object.userData);
-      }
-      isDragging = false;
-    };
+        const hits = raycaster.intersectObject(globe);
 
-    const onMouseLeave = () => {
-      updateHighlight(null);
-      mount.style.cursor = 'default';
-      if (hoverControl) targetVelocity = { x: 0, y: 0 };
-    };
+        if (hits.length > 0 && hits[0].uv) {
+          const uv = hits[0].uv;
+          const lng = uv.x * 360 - 180;
+          const lat = 90 - uv.y * 180;
 
-    // Touch
+          let foundId = null;
+          for (const feat of marketFeatures) {
+            if (pointInGeometry(lng, lat, feat.geometry)) {
+              foundId = feat.id;
+              break;
+            }
+          }
+          updateHighlight(foundId);
+          mount.style.cursor = foundId ? 'pointer' : 'grab';
+        } else {
+          updateHighlight(null);
+          mount.style.cursor = 'default';
+        }
+      };
+
+      const onMouseUp = e => {
+        if (!didDrag && onMarkerClick) {
+          const rect = mount.getBoundingClientRect();
+          mouse.x = ((e.clientX - rect.left) / W) * 2 - 1;
+          mouse.y = -((e.clientY - rect.top) / H) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
+          const hits = raycaster.intersectObjects(dotMeshes);
+          if (hits.length > 0) onMarkerClick(hits[0].object.userData);
+        }
+        isDragging = false;
+      };
+
+      const onMouseLeave = () => {
+        updateHighlight(null);
+        mount.style.cursor = 'default';
+      };
+
+      // Touch
+      const onTouchStart = e => {
+        prevTouch = e.touches[0];
+        velocity = { x: 0, y: 0 };
+      };
+      const onTouchMove = e => {
+        if (!prevTouch) return;
+        const dx = e.touches[0].clientX - prevTouch.clientX;
+        const dy = e.touches[0].clientY - prevTouch.clientY;
+        group.rotation.y += dx * 0.005;
+        group.rotation.x += dy * 0.005;
+        velocity = { x: dy * 0.003, y: dx * 0.003 };
+        prevTouch = e.touches[0];
+      };
+      const onTouchEnd = () => { prevTouch = null; };
+
+      const onWheel = e => {
+        e.preventDefault();
+        camera.position.z = Math.min(MAX_Z, Math.max(MIN_Z, camera.position.z + e.deltaY * 0.002));
+      };
+
+      mount.addEventListener('mousedown', onMouseDown);
+      mount.addEventListener('mousemove', onMouseMove);
+      mount.addEventListener('mouseup', onMouseUp);
+      mount.addEventListener('mouseleave', onMouseLeave);
+      mount.addEventListener('wheel', onWheel, { passive: false });
+      mount.addEventListener('touchstart', onTouchStart);
+      mount.addEventListener('touchmove', onTouchMove);
+      mount.addEventListener('touchend', onTouchEnd);
+    }
+
     let prevTouch = null;
-    const onTouchStart = e => {
-      if (hoverControl) return;
-      prevTouch = e.touches[0];
-      velocity = { x: 0, y: 0 };
-    };
-    const onTouchMove = e => {
-      if (hoverControl || !prevTouch) return;
-      const dx = e.touches[0].clientX - prevTouch.clientX;
-      const dy = e.touches[0].clientY - prevTouch.clientY;
-      group.rotation.y += dx * 0.005;
-      group.rotation.x += dy * 0.005;
-      velocity = { x: dy * 0.003, y: dx * 0.003 };
-      prevTouch = e.touches[0];
-    };
-    const onTouchEnd = () => { prevTouch = null; };
-
-    const onWheel = e => {
-      e.preventDefault();
-      camera.position.z = Math.min(MAX_Z, Math.max(MIN_Z, camera.position.z + e.deltaY * 0.002));
-    };
-
-    mount.addEventListener('mousedown', onMouseDown);
-    mount.addEventListener('mousemove', onMouseMove);
-    mount.addEventListener('mouseup', onMouseUp);
-    mount.addEventListener('mouseleave', onMouseLeave);
-    mount.addEventListener('wheel', onWheel, { passive: false });
-    mount.addEventListener('touchstart', onTouchStart);
-    mount.addEventListener('touchmove', onTouchMove);
-    mount.addEventListener('touchend', onTouchEnd);
 
     const onResize = () => {
       const W2 = mount.clientWidth;
@@ -526,23 +513,19 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
       frameId = requestAnimationFrame(animate);
       time += 0.016;
 
-      if (!isDragging) {
-        // In hover mode: ease velocity toward cursor-driven target
-        if (hoverControl) {
-          velocity.y += (targetVelocity.y - velocity.y) * 0.03;
-          velocity.x += (targetVelocity.x - velocity.x) * 0.03;
-        } else {
-          velocity.x *= 0.95;
-          velocity.y *= 0.95;
-        }
-
+      if (passive) {
+        // Passive: base rotation + smooth cursor influence
+        velocity.y += (cursorInfluence.y - velocity.y) * 0.02;
+        velocity.x += (cursorInfluence.x - velocity.x) * 0.02;
+        group.rotation.y += rotationSpeed + velocity.y;
+        group.rotation.x += velocity.x;
+      } else if (!isDragging) {
+        // Slow/stop rotation when zoomed in, full speed when zoomed out
         const zoomFactor = Math.max(0, (camera.position.z - MIN_Z) / (BASE_Z - MIN_Z));
         group.rotation.y += rotationSpeed * zoomFactor + velocity.y;
         group.rotation.x += velocity.x;
-
-        // Clamp vertical tilt to a small range
-        const MAX_TILT = 0.35; // ~20 degrees
-        group.rotation.x = Math.max(-MAX_TILT, Math.min(MAX_TILT, group.rotation.x));
+        velocity.x *= 0.95;
+        velocity.y *= 0.95;
       }
 
       // Active markers: expanding ripple rings
@@ -571,14 +554,6 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
 
     return () => {
       cancelAnimationFrame(frameId);
-      mount.removeEventListener('mousedown', onMouseDown);
-      mount.removeEventListener('mousemove', onMouseMove);
-      mount.removeEventListener('mouseup', onMouseUp);
-      mount.removeEventListener('mouseleave', onMouseLeave);
-      mount.removeEventListener('wheel', onWheel);
-      mount.removeEventListener('touchstart', onTouchStart);
-      mount.removeEventListener('touchmove', onTouchMove);
-      mount.removeEventListener('touchend', onTouchEnd);
       window.removeEventListener('resize', onResize);
       renderer.dispose();
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
