@@ -2079,9 +2079,7 @@ body {
 
 /* ===== BUYER ===== */
 .boen-buyer__intro {
-  background: var(--boen-navy);
   color: var(--boen-white);
-  padding: 4rem 1.5rem 3rem;
   text-align: center;
   position: relative;
   overflow: hidden;
