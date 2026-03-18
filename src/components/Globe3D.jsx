@@ -66,7 +66,7 @@ function ringCrossesAM(ring) {
 }
 
 /* ── Canvas texture drawing ── */
-const CW = 8192, CH = 4096;
+const CW = 4096, CH = 2048;
 
 function drawTexture(ctx, countries, highlightId) {
   const toX = lng => (lng + 180) / 360 * CW;
@@ -129,6 +129,20 @@ function drawTexture(ctx, countries, highlightId) {
       strokeGeometry(ctx, feat.geometry, toX, toY);
     }
   }
+
+  // Polar fade — blend distorted polar regions into ocean
+  const polarH = CH * 0.12;
+  const topGrad = ctx.createLinearGradient(0, 0, 0, polarH);
+  topGrad.addColorStop(0, '#1a1218');
+  topGrad.addColorStop(1, 'rgba(26, 18, 24, 0)');
+  ctx.fillStyle = topGrad;
+  ctx.fillRect(0, 0, CW, polarH);
+
+  const botGrad = ctx.createLinearGradient(0, CH - polarH, 0, CH);
+  botGrad.addColorStop(0, 'rgba(26, 18, 24, 0)');
+  botGrad.addColorStop(1, '#1a1218');
+  ctx.fillStyle = botGrad;
+  ctx.fillRect(0, CH - polarH, CW, polarH);
 
   // Subtle grid lines
   ctx.strokeStyle = 'rgba(197, 165, 114, 0.04)';
@@ -310,7 +324,7 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     }
 
     const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS, 128, 128),
+      new THREE.SphereGeometry(RADIUS, 64, 64),
       new THREE.MeshPhongMaterial({
         map: canvasTexture,
         specular: new THREE.Color(0x1a1010),
