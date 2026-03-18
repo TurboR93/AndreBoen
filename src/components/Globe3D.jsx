@@ -68,7 +68,7 @@ function ringCrossesAM(ring) {
 /* ── Canvas texture drawing ── */
 const CW = 4096, CH = 2048;
 
-function drawTexture(ctx, countries, highlightId) {
+function drawTexture(ctx, countries, highlightId, neutralMode = false) {
   const toX = lng => (lng + 180) / 360 * CW;
   const toY = lat => (90 - lat) / 180 * CH;
 
@@ -78,9 +78,13 @@ function drawTexture(ctx, countries, highlightId) {
 
   // Fill all countries
   countries.features.forEach(feat => {
-    const isActive = ACTIVE_IDS.has(feat.id);
-    const isDev = DEV_IDS.has(feat.id);
-    ctx.fillStyle = isActive ? '#C5A572' : isDev ? '#7a6347' : '#2d1e1a';
+    if (neutralMode) {
+      ctx.fillStyle = '#2d1e1a';
+    } else {
+      const isActive = ACTIVE_IDS.has(feat.id);
+      const isDev = DEV_IDS.has(feat.id);
+      ctx.fillStyle = isActive ? '#C5A572' : isDev ? '#7a6347' : '#2d1e1a';
+    }
     fillGeometry(ctx, feat.geometry, toX, toY);
   });
 
@@ -272,12 +276,12 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     texCanvas.height = CH;
     const texCtx = texCanvas.getContext('2d');
 
-    drawTexture(texCtx, countries, null);
+    drawTexture(texCtx, countries, null, passive);
     const canvasTexture = new THREE.CanvasTexture(texCanvas);
 
     let currentHighlight = null;
     function updateHighlight(id) {
-      if (id === currentHighlight) return;
+      if (passive || id === currentHighlight) return;
       currentHighlight = id;
       drawTexture(texCtx, countries, id);
       canvasTexture.needsUpdate = true;
