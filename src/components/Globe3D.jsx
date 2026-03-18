@@ -436,10 +436,9 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     let camCurrent = { x: 0, y: 0 }; // smoothed current offset
 
     if (passive) {
-      // Listen on window so overlaying elements don't cause gaps
+      // Desktop: cursor position shifts camera
       const onPassiveMove = e => {
         const rect = mount.getBoundingClientRect();
-        // Compute position relative to globe center, clamped to [-1, 1]
         const rawX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
         const rawY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
         const nx = Math.max(-1, Math.min(1, rawX));
@@ -448,6 +447,16 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
         camTarget.y = -ny * 0.25;
       };
       window.addEventListener('mousemove', onPassiveMove);
+
+      // Mobile: scroll position shifts camera vertically
+      const onPassiveScroll = () => {
+        const scrollY = window.scrollY || window.pageYOffset;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const t = maxScroll > 0 ? Math.min(scrollY / maxScroll, 1) : 0;
+        camTarget.y = -t * 0.4 + 0.1; // shift up as user scrolls down
+      };
+      window.addEventListener('scroll', onPassiveScroll, { passive: true });
+
       mount.style.cursor = 'default';
     } else {
       // Interactive mode: drag, click, hover, zoom
