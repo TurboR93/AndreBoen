@@ -84,6 +84,32 @@ function drawTexture(ctx, countries, highlightId) {
     fillGeometry(ctx, feat.geometry, toX, toY);
   });
 
+  // Italy tricolore overlay (vertical green-white-red)
+  const italyFeat = countries.features.find(f => f.id === '380');
+  if (italyFeat) {
+    // Get Italy's bounding box for the gradient
+    let minX = CW, maxX = 0;
+    const polys = italyFeat.geometry.type === 'Polygon'
+      ? [italyFeat.geometry.coordinates] : italyFeat.geometry.coordinates;
+    polys.forEach(rings => rings[0].forEach(([lng]) => {
+      const x = toX(lng);
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+    }));
+    const tricolore = ctx.createLinearGradient(minX, 0, maxX, 0);
+    tricolore.addColorStop(0, '#009246');    // verde
+    tricolore.addColorStop(0.33, '#009246');
+    tricolore.addColorStop(0.33, '#F1F2F1');  // bianco
+    tricolore.addColorStop(0.66, '#F1F2F1');
+    tricolore.addColorStop(0.66, '#CE2B37');  // rosso
+    tricolore.addColorStop(1, '#CE2B37');
+    ctx.fillStyle = tricolore;
+    fillGeometry(ctx, italyFeat.geometry, toX, toY);
+    // Semi-transparent overlay to blend with the map style
+    ctx.fillStyle = 'rgba(26, 18, 24, 0.35)';
+    fillGeometry(ctx, italyFeat.geometry, toX, toY);
+  }
+
   // Borders (separate pass so fills don't cover them)
   ctx.strokeStyle = '#4a3228';
   ctx.lineWidth = 0.8;
