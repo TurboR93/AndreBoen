@@ -197,7 +197,7 @@ const SECTOR_COLORS = {
   'olive oil': { color: 0x7ab56a, emissive: 0x3a6a2e },
 };
 
-export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, rotationSpeed = 0.0015, flyTo = null, showSectors = false }) {
+export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, rotationSpeed = 0.0015, flyTo = null, showSectors = false, hoverControl = false }) {
   const mountRef = useRef(null);
   const sceneRef = useRef(null); // { group, camera, MIN_Z, BASE_Z }
 
@@ -376,10 +376,12 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     let didDrag = false;
     let prevMouse = { x: 0, y: 0 };
     let velocity = { x: 0, y: 0 };
+    let targetVelocity = { x: 0, y: 0 };
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
     const onMouseDown = e => {
+      if (hoverControl) return;
       isDragging = true;
       didDrag = false;
       prevMouse = { x: e.clientX, y: e.clientY };
@@ -387,6 +389,37 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     };
 
     const onMouseMove = e => {
+      const rect = mount.getBoundingClientRect();
+
+      if (hoverControl) {
+        // Cursor position relative to center → eased target velocity
+        const cx = ((e.clientX - rect.left) / W - 0.5) * 2; // -1 to 1
+        const cy = ((e.clientY - rect.top) / H - 0.5) * 2;
+        targetVelocity.y = cx * 0.006;
+        targetVelocity.x = cy * 0.001;
+
+        // Still do hover highlight
+        mouse.x = cx;
+        mouse.y = -cy;
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObject(globe);
+        if (hits.length > 0 && hits[0].uv) {
+          const uv = hits[0].uv;
+          const lng = uv.x * 360 - 180;
+          const lat = 90 - uv.y * 180;
+          let foundId = null;
+          for (const feat of marketFeatures) {
+            if (pointInGeometry(lng, lat, feat.geometry)) { foundId = feat.id; break; }
+          }
+          updateHighlight(foundId);
+          mount.style.cursor = foundId ? 'pointer' : 'default';
+        } else {
+          updateHighlight(null);
+          mount.style.cursor = 'default';
+        }
+        return;
+      }
+
       if (isDragging) {
         const dx = e.clientX - prevMouse.x;
         const dy = e.clientY - prevMouse.y;
@@ -399,7 +432,6 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
       }
 
       // Hover → highlight market countries
-      const rect = mount.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / W) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / H) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
@@ -426,6 +458,7 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     };
 
     const onMouseUp = e => {
+      if (hoverControl) return;
       if (!didDrag && onMarkerClick) {
         const rect = mount.getBoundingClientRect();
         mouse.x = ((e.clientX - rect.left) / W) * 2 - 1;
@@ -440,16 +473,18 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     const onMouseLeave = () => {
       updateHighlight(null);
       mount.style.cursor = 'default';
+      if (hoverControl) targetVelocity = { x: 0, y: 0 };
     };
 
     // Touch
     let prevTouch = null;
     const onTouchStart = e => {
+      if (hoverControl) return;
       prevTouch = e.touches[0];
       velocity = { x: 0, y: 0 };
     };
     const onTouchMove = e => {
-      if (!prevTouch) return;
+      if (hoverControl || !prevTouch) return;
       const dx = e.touches[0].clientX - prevTouch.clientX;
       const dy = e.touches[0].clientY - prevTouch.clientY;
       group.rotation.y += dx * 0.005;
@@ -492,12 +527,22 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
       time += 0.016;
 
       if (!isDragging) {
-        // Slow/stop rotation when zoomed in, full speed when zoomed out
+        // In hover mode: ease velocity toward cursor-driven target
+        if (hoverControl) {
+          velocity.y += (targetVelocity.y - velocity.y) * 0.03;
+          velocity.x += (targetVelocity.x - velocity.x) * 0.03;
+        } else {
+          velocity.x *= 0.95;
+          velocity.y *= 0.95;
+        }
+
         const zoomFactor = Math.max(0, (camera.position.z - MIN_Z) / (BASE_Z - MIN_Z));
         group.rotation.y += rotationSpeed * zoomFactor + velocity.y;
         group.rotation.x += velocity.x;
-        velocity.x *= 0.95;
-        velocity.y *= 0.95;
+
+        // Clamp vertical tilt to a small range
+        const MAX_TILT = 0.35; // ~20 degrees
+        group.rotation.x = Math.max(-MAX_TILT, Math.min(MAX_TILT, group.rotation.x));
       }
 
       // Active markers: expanding ripple rings
