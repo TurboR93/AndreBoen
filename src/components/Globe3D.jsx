@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { feature } from 'topojson-client';
-import countriesTopo from 'world-atlas/countries-110m.json';
+import countriesTopo from 'world-atlas/countries-50m.json';
 
 // ISO 3166-1 numeric codes for market countries
 const ACTIVE_IDS = new Set([
@@ -110,54 +110,14 @@ function drawTexture(ctx, countries, highlightId) {
     fillGeometry(ctx, italyFeat.geometry, toX, toY);
   }
 
-  // Borders (separate pass so fills don't cover them)
-  ctx.strokeStyle = '#4a3228';
-  ctx.lineWidth = 0.8;
-  countries.features.forEach(feat => {
-    strokeGeometry(ctx, feat.geometry, toX, toY);
-  });
-
-  // Draw highlighted country on top
+  // Highlighted country fill on top (borders handled in 3D)
   if (highlightId) {
     const feat = countries.features.find(f => f.id === highlightId);
     if (feat) {
       const isActiveMkt = ACTIVE_IDS.has(highlightId);
       ctx.fillStyle = isActiveMkt ? '#e8d5b0' : '#a89070';
       fillGeometry(ctx, feat.geometry, toX, toY);
-      ctx.strokeStyle = isActiveMkt ? '#FFF8F0' : '#c8b898';
-      ctx.lineWidth = 3;
-      strokeGeometry(ctx, feat.geometry, toX, toY);
     }
-  }
-
-  // Polar fade — blend distorted polar regions into ocean
-  const polarH = CH * 0.12;
-  const topGrad = ctx.createLinearGradient(0, 0, 0, polarH);
-  topGrad.addColorStop(0, '#1a1218');
-  topGrad.addColorStop(1, 'rgba(26, 18, 24, 0)');
-  ctx.fillStyle = topGrad;
-  ctx.fillRect(0, 0, CW, polarH);
-
-  const botGrad = ctx.createLinearGradient(0, CH - polarH, 0, CH);
-  botGrad.addColorStop(0, 'rgba(26, 18, 24, 0)');
-  botGrad.addColorStop(1, '#1a1218');
-  ctx.fillStyle = botGrad;
-  ctx.fillRect(0, CH - polarH, CW, polarH);
-
-  // Subtle grid lines
-  ctx.strokeStyle = 'rgba(197, 165, 114, 0.04)';
-  ctx.lineWidth = 0.5;
-  for (let lat = -60; lat <= 60; lat += 30) {
-    ctx.beginPath();
-    ctx.moveTo(0, toY(lat));
-    ctx.lineTo(CW, toY(lat));
-    ctx.stroke();
-  }
-  for (let lng = -150; lng <= 180; lng += 30) {
-    ctx.beginPath();
-    ctx.moveTo(toX(lng), 0);
-    ctx.lineTo(toX(lng), CH);
-    ctx.stroke();
   }
 }
 
@@ -333,9 +293,61 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     );
     group.add(globe);
 
+    // 3D country borders — drawn directly on sphere, no projection distortion
+    const borderMat = new THREE.LineBasicMaterial({
+      color: 0x4a3228, transparent: true, opacity: 0.6
+    });
+    const highlightBorderMat = new THREE.LineBasicMaterial({
+      color: 0xfff8f0, transparent: true, opacity: 0.9, linewidth: 2
+    });
+    const borderLines = [];
+
+    countries.features.forEach(feat => {
+      const polys = feat.geometry.type === 'Polygon'
+        ? [feat.geometry.coordinates] : feat.geometry.coordinates;
+      polys.forEach(rings => {
+        rings.forEach(ring => {
+          const pts = [];
+          let prevLng = null;
+          ring.forEach(([lng, lat]) => {
+            // Break line at antimeridian crossings
+            if (prevLng !== null && Math.abs(lng - prevLng) > 170) {
+              if (pts.length > 1) {
+                const geo = new THREE.BufferGeometry().setFromPoints(pts);
+                const line = new THREE.Line(geo, borderMat);
+                line.userData = { countryId: feat.id };
+                group.add(line);
+                borderLines.push(line);
+              }
+              pts.length = 0;
+            }
+            pts.push(latLngToVec3(lat, lng, RADIUS + 0.003));
+            prevLng = lng;
+          });
+          if (pts.length > 1) {
+            const geo = new THREE.BufferGeometry().setFromPoints(pts);
+            const line = new THREE.Line(geo, borderMat);
+            line.userData = { countryId: feat.id };
+            group.add(line);
+            borderLines.push(line);
+          }
+        });
+      });
+    });
+
+    // Update border highlight when country changes
+    const origUpdateHighlight = updateHighlight;
+    updateHighlight = function(id) {
+      origUpdateHighlight(id);
+      borderLines.forEach(line => {
+        const isHL = line.userData.countryId === id;
+        line.material = isHL ? highlightBorderMat : borderMat;
+      });
+    };
+
     // Atmosphere glow
     group.add(new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS + 0.05, 128, 128),
+      new THREE.SphereGeometry(RADIUS + 0.05, 64, 64),
       new THREE.MeshPhongMaterial({ color: 0xc8a96e, transparent: true, opacity: 0.06, side: THREE.BackSide })
     ));
 
