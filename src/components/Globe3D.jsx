@@ -66,7 +66,7 @@ function ringCrossesAM(ring) {
 }
 
 /* ── Canvas texture drawing ── */
-const CW = 4096, CH = 2048;
+const CW = 8192, CH = 4096;
 
 function drawTexture(ctx, countries, highlightId) {
   const toX = lng => (lng + 180) / 360 * CW;
@@ -310,7 +310,7 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     }
 
     const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS, 64, 64),
+      new THREE.SphereGeometry(RADIUS, 128, 128),
       new THREE.MeshPhongMaterial({
         map: canvasTexture,
         specular: new THREE.Color(0x1a1010),
@@ -321,7 +321,7 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
 
     // Atmosphere glow
     group.add(new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS + 0.05, 64, 64),
+      new THREE.SphereGeometry(RADIUS + 0.05, 128, 128),
       new THREE.MeshPhongMaterial({ color: 0xc8a96e, transparent: true, opacity: 0.06, side: THREE.BackSide })
     ));
 
