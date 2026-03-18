@@ -379,20 +379,21 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    // Passive mode: cursor influences rotation with heavy easing
-    let cursorInfluence = { x: 0, y: 0 }; // target influence from cursor
+    // Passive mode: camera shifts slightly with cursor, globe stays on Italy
+    let camTarget = { x: 0, y: 0 }; // target camera offset
+    let camCurrent = { x: 0, y: 0 }; // smoothed current offset
 
     if (passive) {
       const onPassiveMove = e => {
         const rect = mount.getBoundingClientRect();
         const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;  // -1 to 1
         const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-        cursorInfluence.y = nx * 0.003;  // horizontal cursor → Y rotation speed
-        cursorInfluence.x = ny * 0.001;  // vertical cursor → slight X influence
+        camTarget.x = nx * 0.3;   // horizontal camera shift
+        camTarget.y = -ny * 0.2;  // vertical camera shift (inverted)
       };
       const onPassiveLeave = () => {
-        cursorInfluence.x = 0;
-        cursorInfluence.y = 0;
+        camTarget.x = 0;
+        camTarget.y = 0;
       };
       mount.addEventListener('mousemove', onPassiveMove);
       mount.addEventListener('mouseleave', onPassiveLeave);
@@ -514,11 +515,12 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
       time += 0.016;
 
       if (passive) {
-        // Passive: base rotation + smooth cursor influence
-        velocity.y += (cursorInfluence.y - velocity.y) * 0.02;
-        velocity.x += (cursorInfluence.x - velocity.x) * 0.02;
-        group.rotation.y += rotationSpeed + velocity.y;
-        group.rotation.x += velocity.x;
+        // Passive: globe stays on Italy, camera shifts with cursor
+        camCurrent.x += (camTarget.x - camCurrent.x) * 0.06;
+        camCurrent.y += (camTarget.y - camCurrent.y) * 0.06;
+        camera.position.x = camCurrent.x;
+        camera.position.y = camCurrent.y;
+        camera.lookAt(0, 0, 0);
       } else if (!isDragging) {
         // Slow/stop rotation when zoomed in, full speed when zoomed out
         const zoomFactor = Math.max(0, (camera.position.z - MIN_Z) / (BASE_Z - MIN_Z));
