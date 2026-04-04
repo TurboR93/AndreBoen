@@ -1,20 +1,37 @@
 import { useState } from 'react';
 import { useLang } from '../LanguageContext';
 
+const API_URL = '/api/send.php';
+
 export default function Contatti() {
   const { t } = useLang();
   const ct = t.contatti;
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
 
   function set(field, value) {
     setForm(f => ({ ...f, [field]: value }));
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
-    console.log('Contact form:', form);
-    setSubmitted(true);
+    setSending(true);
+    setError('');
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'contatti', ...form }),
+      });
+      if (!res.ok) throw new Error('Invio fallito');
+      setSubmitted(true);
+    } catch {
+      setError(ct.error || 'Errore durante l\'invio. Riprova.');
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -69,7 +86,10 @@ export default function Contatti() {
                 <label>{ct.message}</label>
                 <textarea rows={5} value={form.message} onChange={e => set('message', e.target.value)} required />
               </div>
-              <button type="submit" className="boen-btn boen-btn--gold boen-btn--full">{ct.send}</button>
+              {error && <p style={{ color: '#c0392b', margin: '0 0 12px' }}>{error}</p>}
+              <button type="submit" className="boen-btn boen-btn--gold boen-btn--full" disabled={sending}>
+                {sending ? '...' : ct.send}
+              </button>
             </form>
           )}
         </div>

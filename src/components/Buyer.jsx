@@ -33,10 +33,14 @@ function MultiSelect({ options, value, onChange, placeholder }) {
   );
 }
 
+const API_URL = '/api/send.php';
+
 export default function Buyer() {
   const { t } = useLang();
   const bt = t.buyer;
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({
     company: '',
     country: '',
@@ -53,12 +57,28 @@ export default function Buyer() {
     setForm(f => ({ ...f, [field]: value }));
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
+    setSending(true);
+    setError('');
+    // Save to localStorage
     const existing = JSON.parse(localStorage.getItem('boenBuyers') || '[]');
     existing.push({ ...form, date: new Date().toISOString() });
     localStorage.setItem('boenBuyers', JSON.stringify(existing));
-    setSubmitted(true);
+    // Send email
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'buyer', ...form }),
+      });
+      if (!res.ok) throw new Error('Invio fallito');
+    } catch {
+      setError(bt.error || 'Errore durante l\'invio email, ma i dati sono stati salvati.');
+    } finally {
+      setSending(false);
+      setSubmitted(true);
+    }
   }
 
   return (
@@ -134,7 +154,10 @@ export default function Buyer() {
               <textarea rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} />
             </div>
 
-            <button type="submit" className="boen-btn boen-btn--gold boen-btn--full">{bt.submit}</button>
+            {error && <p style={{ color: '#c0392b', margin: '0 0 12px' }}>{error}</p>}
+            <button type="submit" className="boen-btn boen-btn--gold boen-btn--full" disabled={sending}>
+              {sending ? '...' : bt.submit}
+            </button>
           </form>
         )}
       </div>
