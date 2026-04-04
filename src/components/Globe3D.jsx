@@ -201,7 +201,7 @@ const SECTOR_COLORS = {
   'olive oil': { color: 0x7ab56a, emissive: 0x3a6a2e },
 };
 
-export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, rotationSpeed = 0.0015, flyTo = null, showSectors = false, passive = false }) {
+export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, rotationSpeed = 0.0015, flyTo = null, showSectors = false, passive = false, satelliteTexture = false, zoomIn = false, onZoomComplete = null }) {
   const mountRef = useRef(null);
   const sceneRef = useRef(null); // { group, camera, MIN_Z, BASE_Z }
 
@@ -238,17 +238,46 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
 
     // Scene + camera
     const scene = new THREE.Scene();
+    if (satelliteTexture) {
+      scene.background = new THREE.Color(0x000000);
+      // Starfield — thousands of tiny points in deep space
+      const starCount = 3000;
+      const starGeo = new THREE.BufferGeometry();
+      const starPos = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount; i++) {
+        // Random positions on a large sphere around the scene
+        const r = 80 + Math.random() * 120;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        starPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        starPos[i * 3 + 2] = r * Math.cos(phi);
+      }
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
+        color: 0xffffff, size: 0.15, sizeAttenuation: true,
+      })));
+    }
     const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
     const BASE_Z = 2.8;
     const MIN_Z = BASE_Z * 0.7;   // 30% zoom in
-    const MAX_Z = BASE_Z * 1.1;   // 10% zoom out
+    const MAX_Z = BASE_Z * 2.5;   // 150% zoom out
     camera.position.z = BASE_Z;
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const sun = new THREE.DirectionalLight(0xffeedd, 1.2);
-    sun.position.set(5, 3, 5);
-    scene.add(sun);
+    if (satelliteTexture) {
+      // Realistic space illumination — very low ambient (space is dark),
+      // strong directional sun creates visible day/night terminator
+      scene.add(new THREE.AmbientLight(0x111122, 0.4));
+      const sun = new THREE.DirectionalLight(0xfffaf0, 2.2);
+      sun.position.set(5, 1, 3);
+      scene.add(sun);
+    } else {
+      scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+      const sun = new THREE.DirectionalLight(0xffeedd, 1.2);
+      sun.position.set(5, 3, 5);
+      scene.add(sun);
+    }
 
     // Group: everything that rotates together
     const group = new THREE.Group();
@@ -269,33 +298,149 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     const countries = feature(countriesTopo, countriesTopo.objects.countries);
     const marketFeatures = countries.features.filter(f => MARKET_IDS.has(f.id));
 
-    // Globe texture (reusable canvas)
+    // Globe texture
     const RADIUS = 1;
-    const texCanvas = document.createElement('canvas');
-    texCanvas.width = CW;
-    texCanvas.height = CH;
-    const texCtx = texCanvas.getContext('2d');
+    let globeMaterial;
+    let texCanvas, texCtx, canvasTexture;
 
-    drawTexture(texCtx, countries, null, passive);
-    const canvasTexture = new THREE.CanvasTexture(texCanvas);
+    if (satelliteTexture) {
+      // Load NASA Blue Marble satellite texture
+      const loader = new THREE.TextureLoader();
+      const earthTex = loader.load(
+        `${import.meta.env.BASE_URL}textures/earth-blue-marble.jpg`
+      );
+      earthTex.colorSpace = THREE.SRGBColorSpace;
+      globeMaterial = new THREE.MeshPhongMaterial({
+        map: earthTex,
+        color: new THREE.Color(0xffffff),    // no tint — natural satellite colors
+        specular: new THREE.Color(0x333333),
+        shininess: 15,
+      });
+    } else {
+      // Canvas-drawn flat texture (admin / Mercati pages)
+      texCanvas = document.createElement('canvas');
+      texCanvas.width = CW;
+      texCanvas.height = CH;
+      texCtx = texCanvas.getContext('2d');
+      drawTexture(texCtx, countries, null, passive);
+      canvasTexture = new THREE.CanvasTexture(texCanvas);
+      globeMaterial = new THREE.MeshPhongMaterial({
+        map: canvasTexture,
+        specular: new THREE.Color(0x1a1010),
+        shininess: 8,
+      });
+    }
+
+    const globe = new THREE.Mesh(
+      new THREE.SphereGeometry(RADIUS, 64, 64),
+      globeMaterial
+    );
+    group.add(globe);
+
+    // Overlay canvas for satellite mode — Italy tricolore + market highlights
+    let overlayCtx, overlayTexture;
+    const toX = lng => (lng + 180) / 360 * CW;
+    const toY = lat => (90 - lat) / 180 * CH;
+
+    if (satelliteTexture) {
+      const oCanvas = document.createElement('canvas');
+      oCanvas.width = CW;
+      oCanvas.height = CH;
+      overlayCtx = oCanvas.getContext('2d');
+
+      function drawOverlay(highlightId) {
+        overlayCtx.clearRect(0, 0, CW, CH);
+        // Italy tricolore
+        const italyFeat = countries.features.find(f => f.id === '380');
+        if (italyFeat) {
+          let minX = CW, maxX = 0;
+          const polys = italyFeat.geometry.type === 'Polygon'
+            ? [italyFeat.geometry.coordinates] : italyFeat.geometry.coordinates;
+          polys.forEach(rings => rings[0].forEach(([lng]) => {
+            const x = toX(lng);
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+          }));
+          const tricolore = overlayCtx.createLinearGradient(minX, 0, maxX, 0);
+          tricolore.addColorStop(0, '#009246');
+          tricolore.addColorStop(0.33, '#009246');
+          tricolore.addColorStop(0.33, '#F1F2F1');
+          tricolore.addColorStop(0.66, '#F1F2F1');
+          tricolore.addColorStop(0.66, '#CE2B37');
+          tricolore.addColorStop(1, '#CE2B37');
+          overlayCtx.fillStyle = tricolore;
+          fillGeometry(overlayCtx, italyFeat.geometry, toX, toY);
+          overlayCtx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+          fillGeometry(overlayCtx, italyFeat.geometry, toX, toY);
+        }
+        // Market country highlights (interactive mode)
+        if (!passive) {
+          countries.features.forEach(feat => {
+            const isActive = ACTIVE_IDS.has(feat.id);
+            const isDev = DEV_IDS.has(feat.id);
+            if (!isActive && !isDev) return;
+            const isHL = feat.id === highlightId;
+            overlayCtx.fillStyle = isHL
+              ? 'rgba(232, 213, 176, 0.45)'
+              : isActive ? 'rgba(200, 169, 110, 0.25)' : 'rgba(122, 99, 71, 0.2)';
+            fillGeometry(overlayCtx, feat.geometry, toX, toY);
+          });
+        }
+      }
+      drawOverlay(null);
+      overlayTexture = new THREE.CanvasTexture(oCanvas);
+      group.add(new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS + 0.001, 64, 64),
+        new THREE.MeshBasicMaterial({ map: overlayTexture, transparent: true, depthWrite: false })
+      ));
+    }
 
     let currentHighlight = null;
     function updateHighlight(id) {
       if (passive || id === currentHighlight) return;
       currentHighlight = id;
-      drawTexture(texCtx, countries, id);
-      canvasTexture.needsUpdate = true;
+      if (satelliteTexture && overlayCtx && overlayTexture) {
+        // Redraw overlay with new highlight
+        overlayCtx.clearRect(0, 0, CW, CH);
+        // Italy tricolore
+        const italyFeat = countries.features.find(f => f.id === '380');
+        if (italyFeat) {
+          let minX = CW, maxX = 0;
+          const polys = italyFeat.geometry.type === 'Polygon'
+            ? [italyFeat.geometry.coordinates] : italyFeat.geometry.coordinates;
+          polys.forEach(rings => rings[0].forEach(([lng]) => {
+            const x = toX(lng);
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+          }));
+          const tricolore = overlayCtx.createLinearGradient(minX, 0, maxX, 0);
+          tricolore.addColorStop(0, '#009246');
+          tricolore.addColorStop(0.33, '#009246');
+          tricolore.addColorStop(0.33, '#F1F2F1');
+          tricolore.addColorStop(0.66, '#F1F2F1');
+          tricolore.addColorStop(0.66, '#CE2B37');
+          tricolore.addColorStop(1, '#CE2B37');
+          overlayCtx.fillStyle = tricolore;
+          fillGeometry(overlayCtx, italyFeat.geometry, toX, toY);
+          overlayCtx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+          fillGeometry(overlayCtx, italyFeat.geometry, toX, toY);
+        }
+        countries.features.forEach(feat => {
+          const isActive = ACTIVE_IDS.has(feat.id);
+          const isDev = DEV_IDS.has(feat.id);
+          if (!isActive && !isDev) return;
+          const isHL = feat.id === id;
+          overlayCtx.fillStyle = isHL
+            ? 'rgba(232, 213, 176, 0.45)'
+            : isActive ? 'rgba(200, 169, 110, 0.25)' : 'rgba(122, 99, 71, 0.2)';
+          fillGeometry(overlayCtx, feat.geometry, toX, toY);
+        });
+        overlayTexture.needsUpdate = true;
+      } else if (texCtx && canvasTexture) {
+        drawTexture(texCtx, countries, id);
+        canvasTexture.needsUpdate = true;
+      }
     }
-
-    const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS, 64, 64),
-      new THREE.MeshPhongMaterial({
-        map: canvasTexture,
-        specular: new THREE.Color(0x1a1010),
-        shininess: 8,
-      })
-    );
-    group.add(globe);
 
     // 3D country borders — drawn directly on sphere, no projection distortion
     const borderMat = new THREE.LineBasicMaterial({
@@ -349,11 +494,62 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
       });
     };
 
-    // Atmosphere glow
-    group.add(new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS + 0.05, 64, 64),
-      new THREE.MeshPhongMaterial({ color: 0xc8a96e, transparent: true, opacity: 0.06, side: THREE.BackSide })
-    ));
+    // Atmosphere (satellite mode only)
+    if (satelliteTexture) {
+      // Thin bright atmospheric edge — like Google Earth from space
+      // Just a subtle bright line at the very limb, not a thick blue haze
+      const atmosVert = `
+        varying vec3 vNormal;
+        varying vec3 vPos;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vPos = (modelViewMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * vec4(vPos, 1.0);
+        }
+      `;
+      // Outer thin glow — the bright atmospheric line visible from space
+      group.add(new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS + 0.04, 64, 64),
+        new THREE.ShaderMaterial({
+          vertexShader: atmosVert,
+          fragmentShader: `
+            varying vec3 vNormal;
+            varying vec3 vPos;
+            void main() {
+              float rim = 1.0 - max(dot(normalize(-vPos), vNormal), 0.0);
+              // Very concentrated at the edge — pow 6 keeps it thin
+              float glow = pow(rim, 6.0);
+              // Bright white-blue like real atmospheric scattering
+              vec3 col = mix(vec3(0.5, 0.7, 1.0), vec3(0.8, 0.9, 1.0), rim);
+              gl_FragColor = vec4(col, glow * 0.8);
+            }
+          `,
+          transparent: true, side: THREE.BackSide, depthWrite: false,
+        })
+      ));
+      // Inner limb haze — very subtle blue tinge at edges of globe surface
+      group.add(new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS + 0.002, 64, 64),
+        new THREE.ShaderMaterial({
+          vertexShader: atmosVert,
+          fragmentShader: `
+            varying vec3 vNormal;
+            varying vec3 vPos;
+            void main() {
+              float rim = 1.0 - max(dot(normalize(-vPos), vNormal), 0.0);
+              float haze = pow(rim, 4.0) * 0.4;
+              gl_FragColor = vec4(0.5, 0.7, 1.0, haze);
+            }
+          `,
+          transparent: true, side: THREE.FrontSide, depthWrite: false,
+        })
+      ));
+    } else {
+      group.add(new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS + 0.05, 64, 64),
+        new THREE.MeshPhongMaterial({ color: 0xc8a96e, transparent: true, opacity: 0.06, side: THREE.BackSide })
+      ));
+    }
 
     // Compute per-marker size based on neighbor density
     const NEIGHBOR_RADIUS = 5; // degrees
@@ -377,7 +573,7 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     const devDots = [];
 
     markers.forEach((country, idx) => {
-      const pos = latLngToVec3(country.lat, country.lng, RADIUS + 0.02);
+      const pos = latLngToVec3(country.lat, country.lng, RADIUS + 0.03);
       const normal = pos.clone().normalize();
       const isActive = country.status === 'active';
       const size = markerSizes[idx];
@@ -408,6 +604,9 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
               transparent: true,
               opacity: 0,
               side: THREE.DoubleSide,
+              depthWrite: false,
+              polygonOffset: true,
+              polygonOffsetFactor: -1,
             })
           );
           ring.position.copy(pos);
@@ -438,6 +637,7 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     // Passive mode: camera shifts slightly with cursor, globe stays on Italy
     let camTarget = { x: 0, y: 0 }; // target camera offset
     let camCurrent = { x: 0, y: 0 }; // smoothed current offset
+    let targetZ = camera.position.z;
 
     if (passive) {
       // Desktop: cursor position shifts camera
@@ -545,7 +745,7 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
 
       const onWheel = e => {
         e.preventDefault();
-        camera.position.z = Math.min(MAX_Z, Math.max(MIN_Z, camera.position.z + e.deltaY * 0.002));
+        targetZ = Math.min(MAX_Z, Math.max(MIN_Z, targetZ + e.deltaY * 0.002));
       };
 
       mount.addEventListener('mousedown', onMouseDown);
@@ -570,13 +770,35 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
     };
     window.addEventListener('resize', onResize);
 
+    // Zoom-in animation setup — start far out like a space view
+    const ZOOM_START_Z = 14.0;
+    const ZOOM_DURATION = 4.0; // seconds
+    let zoomElapsed = 0;
+    let zoomDone = false;
+    if (zoomIn) camera.position.z = ZOOM_START_Z;
+    let lastTime = performance.now();
+
     // Animation loop
     let frameId;
     let time = 0;
 
     const animate = () => {
       frameId = requestAnimationFrame(animate);
-      time += 0.016;
+      const now = performance.now();
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+      time += 0.016; // keep fixed step for ripple/breathe animations
+
+      // Zoom-in: slow start, accelerates, then very gentle landing
+      if (zoomIn && zoomElapsed < ZOOM_DURATION) {
+        zoomElapsed += dt;
+        const t = Math.min(zoomElapsed / ZOOM_DURATION, 1);
+        const eased = t < 0.4
+          ? 2 * Math.pow(t / 0.4, 2) * 0.4
+          : 1 - Math.pow(1 - t, 4);
+        camera.position.z = ZOOM_START_Z + (BASE_Z - ZOOM_START_Z) * eased;
+        if (t >= 1 && !zoomDone) { zoomDone = true; if (onZoomComplete) onZoomComplete(); }
+      }
 
       if (passive) {
         // Passive: globe stays on Italy, camera shifts with cursor
@@ -585,13 +807,20 @@ export default function Globe3D({ markers = [], onMarkerClick, dotSize = 0.025, 
         camera.position.x = camCurrent.x;
         camera.position.y = camCurrent.y;
         camera.lookAt(0, 0, 0);
-      } else if (!isDragging) {
-        // Slow/stop rotation when zoomed in, full speed when zoomed out
-        const zoomFactor = Math.max(0, (camera.position.z - MIN_Z) / (BASE_Z - MIN_Z));
-        group.rotation.y += rotationSpeed * zoomFactor + velocity.y;
-        group.rotation.x += velocity.x;
-        velocity.x *= 0.95;
-        velocity.y *= 0.95;
+      } else {
+        // Smooth zoom easing
+        camera.position.z += (targetZ - camera.position.z) * 0.1;
+        if (!isDragging) {
+          // Slow/stop rotation when zoomed in, full speed when zoomed out
+          const zoomFactor = Math.min(1, Math.max(0, (camera.position.z - MIN_Z) / (BASE_Z - MIN_Z)));
+          const MAX_VEL = 0.005;
+          velocity.x = Math.max(-MAX_VEL, Math.min(MAX_VEL, velocity.x));
+          velocity.y = Math.max(-MAX_VEL, Math.min(MAX_VEL, velocity.y));
+          group.rotation.y += rotationSpeed * zoomFactor + velocity.y;
+          group.rotation.x += velocity.x;
+          velocity.x *= 0.93;
+          velocity.y *= 0.93;
+        }
       }
 
       // Active markers: expanding ripple rings

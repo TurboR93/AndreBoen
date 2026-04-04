@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../LanguageContext';
 import Globe3D from './Globe3D';
@@ -12,6 +13,7 @@ const CATEGORIES = [
 export default function Home() {
   const { t } = useLang();
   const navigate = useNavigate();
+  const [showContent, setShowContent] = useState(false);
 
   function handleCategory(cat) {
     navigate(`/mercati?cat=${cat.key}`);
@@ -21,23 +23,25 @@ export default function Home() {
     <div className="boen-home">
       <section className="boen-hero">
         <div className="boen-hero__globe">
-          <Globe3D markers={[]} passive />
+          <Globe3D markers={[]} passive satelliteTexture zoomIn onZoomComplete={() => setShowContent(true)} />
         </div>
         <div className="boen-hero__overlay" />
-        <div className="boen-hero__content">
-          <div className="boen-hero__logo">
-            <span className="boen-hero__logo-main">BOEN</span>
-            <em className="boen-hero__logo-sub">Milano</em>
+        {showContent && (
+          <div className="boen-hero__content boen-hero__content--banner">
+            <div className="boen-hero__logo">
+              <span className="boen-hero__logo-main">BOEN</span>
+              <em className="boen-hero__logo-sub">Milano</em>
+            </div>
+            <h1 className="boen-hero__claim">{t.home.claim}</h1>
+            <p className="boen-hero__subtitle">{t.home.subtitle}</p>
+            <button
+              className="boen-btn boen-btn--gold"
+              onClick={() => navigate('/mercati')}
+            >
+              {t.home.discover}
+            </button>
           </div>
-          <h1 className="boen-hero__claim">{t.home.claim}</h1>
-          <p className="boen-hero__subtitle">{t.home.subtitle}</p>
-          <button
-            className="boen-btn boen-btn--gold"
-            onClick={() => navigate('/mercati')}
-          >
-            {t.home.discover}
-          </button>
-        </div>
+        )}
       </section>
 
       <section className="boen-categories">

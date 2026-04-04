@@ -44,7 +44,7 @@ export default function Mercati() {
 
       <div className="boen-mercati__body">
         <div className="boen-mercati__globe-wrap">
-          <Globe3D markers={networkCountries} onMarkerClick={handleMarkerClick} hoverControl />
+          <Globe3D markers={networkCountries} onMarkerClick={handleMarkerClick} satelliteTexture flyTo={selectedCountry} />
           <p className="boen-mercati__hint">
             {lang === 'it' ? 'Clicca sui pin per esplorare i mercati' : 'Click the pins to explore markets'}
           </p>
